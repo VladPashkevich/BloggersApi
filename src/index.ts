@@ -98,7 +98,7 @@ app.get('/bloggers/:bloggerId', (req: Request, res: Response) => {
 });
 
 app.delete('/bloggers/:bloggerId', (req: Request, res: Response) => {
-  const id = +req.params.videoId;
+  const id = +req.params.bloggerId;
   const newBloggers = bloggers.filter((v) => v.id !== id);
 
   if (newBloggers.length < bloggers.length) {
