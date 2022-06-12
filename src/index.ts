@@ -171,7 +171,7 @@ app.post('/posts', (req: Request, res: Response) => {
       field: 'content',
     });
   }
-  if (!bloggerId || typeof bloggerId !== 'number') {
+  if (!bloggerId || typeof bloggerId !== 'number' || !Number.isInteger(bloggerId)) {
     errorsMessage.push({
       message: 'Incorrect bloggerId',
       field: 'bloggerId',
@@ -225,7 +225,7 @@ app.put('/posts/:postId', (req: Request, res: Response) => {
       field: 'content',
     });
   }
-  if (!bloggerId || typeof bloggerId !== 'number') {
+  if (!bloggerId || typeof bloggerId !== 'number' || !Number.isInteger(bloggerId)) {
     errorsMessage.push({
       message: 'Incorrect bloggerId',
       field: 'bloggerId',
