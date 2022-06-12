@@ -65,7 +65,13 @@ app.post('/bloggers', (req: Request, res: Response) => {
       field: 'name',
     });
   }
-  if (!url || typeof url !== 'string' || !url.trim() || url.length > 100) {
+  if (
+    !url ||
+    typeof url !== 'string' ||
+    !url.trim() ||
+    url.length > 100 ||
+    !url.match(new RegExp('^https://([a-zA-Z0-9_-]+.)+[a-zA-Z0-9_-]+(/[a-zA-Z0-9_-]+)*/?$'))
+  ) {
     errorsMessage.push({
       message: 'Incorrect youtubeUrl',
       field: 'youtubeUrl',
