@@ -72,7 +72,7 @@ app.post('/bloggers', (req: Request, res: Response) => {
     });
   }
   if (errorsMessage.length > 0) {
-    res.status(400).send(errorsMessage);
+    res.status(400).send({ errorsMessages: errorsMessage });
     return;
   }
 
