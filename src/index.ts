@@ -127,7 +127,7 @@ app.delete('/bloggers/:bloggerId', (req: Request, res: Response) => {
 });
 
 app.get('/posts', (req: Request, res: Response) => {
-  res.send(posts);
+  res.status(200).send(posts);
 });
 
 app.post('/posts', (req: Request, res: Response) => {
@@ -259,7 +259,7 @@ app.get('/posts/:postId', (req: Request, res: Response) => {
   const id = +req.params.postId;
   const post = posts.find((b) => b.id === id);
   if (post) {
-    res.send(post);
+    res.status(200).send(post);
   } else {
     res.send(404);
   }
@@ -273,7 +273,7 @@ app.delete('/posts/:postId', (req: Request, res: Response) => {
     res.sendStatus(404);
   } else {
     posts.splice(index, 1);
-    res.sendStatus(204);
+    res.send(204);
   }
 });
 
