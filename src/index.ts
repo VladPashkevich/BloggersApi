@@ -2,6 +2,11 @@ import express, { Request, Response } from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 
+interface ErrorsMessage {
+  message: string;
+  field: string;
+}
+
 const app = express();
 
 app.use(cors());
@@ -51,7 +56,7 @@ app.get('/bloggers/:bloggerId', (req: Request, res: Response) => {
 });
 
 app.post('/bloggers', (req: Request, res: Response) => {
-  const errorsMessage: any[] = [];
+  const errorsMessage: ErrorsMessage[] = [];
   let name = req.body.name;
   let url = req.body.youtubeUrl;
   if (!name || typeof name !== 'string' || !name.trim() || name.length > 15) {
@@ -59,14 +64,12 @@ app.post('/bloggers', (req: Request, res: Response) => {
       message: 'Incorrect name',
       field: 'name',
     });
-    return;
   }
   if (!url || typeof url !== 'string' || !url.trim() || url.length > 100) {
     errorsMessage.push({
       message: 'Incorrect youtubeUrl',
       field: 'youtubeUrl',
     });
-    return;
   }
   if (errorsMessage.length > 0) {
     res.status(400).send(errorsMessage);
