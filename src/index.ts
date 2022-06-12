@@ -16,10 +16,38 @@ let bloggers = [
   { id: 4, name: 'Sasha', youtubeUrl: 'it-incubator.eu' },
   { id: 5, name: 'Vitya', youtubeUrl: 'it-incubator.eu' },
 ];
-let posts = [{}];
+let posts = [
+  {
+    id: 1,
+    title: 'privet',
+    shortDescription: 'privetstvie',
+    content: 'abrakadabra',
+    bloggerId: 1,
+    bloggerName: 'Vasya',
+  },
+  {
+    id: 2,
+    title: 'poka',
+    shortDescription: 'proshanie',
+    content: 'abrabaraka',
+    bloggerId: 2,
+    bloggerName: 'Vova',
+  },
+];
 
 app.get('/bloggers', (req: Request, res: Response) => {
   res.send(bloggers);
+});
+
+app.get('/bloggers/:bloggerId', (req: Request, res: Response) => {
+  const id = +req.params.bloggerId;
+  const blogger = bloggers.find((b) => b.id === id);
+
+  if (blogger) {
+    res.send(blogger);
+  } else {
+    res.send(404);
+  }
 });
 
 app.post('/bloggers', (req: Request, res: Response) => {
@@ -86,26 +114,166 @@ app.put('/bloggers/:bloggerId', (req: Request, res: Response) => {
   }
 });
 
-app.get('/bloggers/:bloggerId', (req: Request, res: Response) => {
+app.delete('/bloggers/:bloggerId', (req: Request, res: Response) => {
   const id = +req.params.bloggerId;
-  const blogger = bloggers.find((b) => b.id === id);
+  const index = bloggers.findIndex((v) => v.id !== id);
 
-  if (blogger) {
-    res.send(blogger);
+  if (index === -1) {
+    res.sendStatus(404);
+  } else {
+    bloggers.splice(index, 1);
+    res.sendStatus(204);
+  }
+});
+
+app.get('/posts', (req: Request, res: Response) => {
+  res.send(posts);
+});
+
+app.post('/posts', (req: Request, res: Response) => {
+  let title = req.body.title;
+  let descript = req.body.shortDescription;
+  let content = req.body.content;
+  let bloggerId = +req.body.bloggerId;
+  const blogger = bloggers.find((blogger) => bloggerId === blogger.id);
+  if (
+    !title ||
+    typeof title !== 'string' ||
+    !title.trim() ||
+    title.length > 30 ||
+    !descript ||
+    typeof descript !== 'string' ||
+    !descript.trim() ||
+    descript.length > 100 ||
+    !content ||
+    typeof content !== 'string' ||
+    !content.trim() ||
+    content.length > 1000 ||
+    !bloggerId ||
+    typeof bloggerId !== 'number'
+  ) {
+    res.status(400).send({
+      errormessages: [
+        {
+          message: 'Incorect title',
+          field: 'title',
+        },
+        {
+          message: 'Incorect descript',
+          field: 'descript',
+        },
+        {
+          message: 'Incorect content',
+          field: 'content',
+        },
+        {
+          message: 'Incorect bloggerId',
+          field: 'bloggerId',
+        },
+      ],
+    });
+    return;
+  }
+
+  if (!blogger) {
+    res.send(404);
+    return;
+  }
+  const post = {
+    id: +new Date(),
+    title: title,
+    shortDescription: descript,
+    content: content,
+    bloggerId: bloggerId,
+    bloggerName: blogger.name,
+  };
+  posts.push(post);
+  res.status(201).send(post);
+});
+
+app.put('/posts/:postId', (req: Request, res: Response) => {
+  let title = req.body.title;
+  let descript = req.body.shortDescription;
+  let content = req.body.content;
+  let bloggerId = +req.body.bloggerId;
+  const blogger = bloggers.find((blogger) => bloggerId === blogger.id);
+
+  if (
+    !title ||
+    typeof title !== 'string' ||
+    !title.trim() ||
+    title.length > 30 ||
+    !descript ||
+    typeof descript !== 'string' ||
+    !descript.trim() ||
+    descript.length > 100 ||
+    !content ||
+    typeof content !== 'string' ||
+    !content.trim() ||
+    content.length > 1000 ||
+    !bloggerId ||
+    typeof bloggerId !== 'number'
+  ) {
+    res.status(400).send({
+      errormessages: [
+        {
+          message: 'Incorect title',
+          field: 'title',
+        },
+        {
+          message: 'Incorect descript',
+          field: 'descript',
+        },
+        {
+          message: 'Incorect content',
+          field: 'content',
+        },
+        {
+          message: 'Incorect bloggerId',
+          field: 'bloggerId',
+        },
+      ],
+    });
+    return;
+  }
+
+  if (!blogger) {
+    res.send(404);
+    return;
+  }
+
+  const id = +req.params.postId;
+  const post = posts.find((p) => p.id === id);
+  if (post) {
+    post.title = title;
+    post.shortDescription = descript;
+    post.content = content;
+    post.bloggerId = bloggerId;
+    res.status(204).send(post);
   } else {
     res.send(404);
   }
 });
 
-app.delete('/bloggers/:bloggerId', (req: Request, res: Response) => {
-  const id = +req.params.bloggerId;
-  const newBloggers = bloggers.filter((v) => v.id !== id);
-
-  if (newBloggers.length < bloggers.length) {
-    bloggers = newBloggers;
-    res.send(204);
+app.get('/posts/:postId', (req: Request, res: Response) => {
+  const id = +req.params.postId;
+  const post = posts.find((b) => b.id === id);
+  if (post) {
+    res.send(post);
   } else {
     res.send(404);
+  }
+});
+
+app.delete('/posts/:postId', (req: Request, res: Response) => {
+  const id = +req.params.bloggerId;
+  const index = posts.findIndex((v) => v.id !== id);
+
+  if (index === -1) {
+    res.sendStatus(404);
+  } else {
+    posts.splice(index, 1);
+    res.sendStatus(204);
   }
 });
 
