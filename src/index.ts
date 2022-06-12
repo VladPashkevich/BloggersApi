@@ -54,8 +54,14 @@ app.post('/bloggers', (req: Request, res: Response) => {
   let name = req.body.name;
   let url = req.body.youtubeUrl;
   if (
-    (!name || typeof name !== 'string' || !name.trim() || name.length > 15) &&
-    (!url || typeof url !== 'string' || !url.trim() || url.length > 100)
+    !name ||
+    typeof name !== 'string' ||
+    !name.trim() ||
+    name.length > 15 ||
+    !url ||
+    typeof url !== 'string' ||
+    !url.trim() ||
+    url.length > 100
   ) {
     res.status(400).send({
       errormessages: [
@@ -86,8 +92,14 @@ app.put('/bloggers/:bloggerId', (req: Request, res: Response) => {
   let url = req.body.youtubeUrl;
 
   if (
-    (!name || typeof name !== 'string' || !name.trim() || name.length > 15) &&
-    (!url || typeof url !== 'string' || !url.trim() || url.length > 100)
+    !name ||
+    typeof name !== 'string' ||
+    !name.trim() ||
+    name.length > 15 ||
+    !url ||
+    typeof url !== 'string' ||
+    !url.trim() ||
+    url.length > 100
   ) {
     res.status(400).send({
       errormessages: [
@@ -162,14 +174,6 @@ app.post('/posts', (req: Request, res: Response) => {
           message: 'Incorect descript',
           field: 'descript',
         },
-        {
-          message: 'Incorect content',
-          field: 'content',
-        },
-        {
-          message: 'Incorect bloggerId',
-          field: 'bloggerId',
-        },
       ],
     });
     return;
@@ -224,14 +228,6 @@ app.put('/posts/:postId', (req: Request, res: Response) => {
           message: 'Incorect descript',
           field: 'descript',
         },
-        {
-          message: 'Incorect content',
-          field: 'content',
-        },
-        {
-          message: 'Incorect bloggerId',
-          field: 'bloggerId',
-        },
       ],
     });
     return;
@@ -266,7 +262,7 @@ app.get('/posts/:postId', (req: Request, res: Response) => {
 });
 
 app.delete('/posts/:postId', (req: Request, res: Response) => {
-  const id = +req.params.bloggerId;
+  const id = +req.params.postId;
   const index = posts.findIndex((v) => v.id === id);
 
   if (index === -1) {
