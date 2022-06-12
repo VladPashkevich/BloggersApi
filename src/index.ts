@@ -92,33 +92,33 @@ app.post('/bloggers', (req: Request, res: Response) => {
 });
 
 app.put('/bloggers/:bloggerId', (req: Request, res: Response) => {
+  const errorsMessage: ErrorsMessage[] = [];
   let name = req.body.name;
   let url = req.body.youtubeUrl;
 
+  if (!name || typeof name !== 'string' || !name.trim() || name.length > 15) {
+    errorsMessage.push({
+      message: 'Incorrect name',
+      field: 'name',
+    });
+  }
   if (
-    !name ||
-    typeof name !== 'string' ||
-    !name.trim() ||
-    name.length > 15 ||
     !url ||
     typeof url !== 'string' ||
     !url.trim() ||
-    url.length > 100
+    url.length > 100 ||
+    !url.match(new RegExp('^https://([a-zA-Z0-9_-]+.)+[a-zA-Z0-9_-]+(/[a-zA-Z0-9_-]+)*/?$'))
   ) {
-    res.status(400).send({
-      errorsMessages: [
-        {
-          message: 'Incorrect youtubeUrl',
-          field: 'youtubeUrl',
-        },
-        {
-          message: 'Incorrect name',
-          field: 'name',
-        },
-      ],
+    errorsMessage.push({
+      message: 'Incorrect youtubeUrl',
+      field: 'youtubeUrl',
     });
+  }
+  if (errorsMessage.length > 0) {
+    res.status(400).send({ errorsMessages: errorsMessage });
     return;
   }
+
   const id = +req.params.bloggerId;
   const blogger = bloggers.find((v) => v.id === id);
 
@@ -147,39 +147,39 @@ app.get('/posts', (req: Request, res: Response) => {
 });
 
 app.post('/posts', (req: Request, res: Response) => {
+  const errorsMessage: ErrorsMessage[] = [];
   let title = req.body.title;
   let descript = req.body.shortDescription;
   let content = req.body.content;
   let bloggerId = +req.body.bloggerId;
   const blogger = bloggers.find((blogger) => bloggerId === blogger.id);
-  if (
-    !title ||
-    typeof title !== 'string' ||
-    !title.trim() ||
-    title.length > 30 ||
-    !descript ||
-    typeof descript !== 'string' ||
-    !descript.trim() ||
-    descript.length > 100 ||
-    !content ||
-    typeof content !== 'string' ||
-    !content.trim() ||
-    content.length > 1000 ||
-    !bloggerId ||
-    typeof bloggerId !== 'number'
-  ) {
-    res.status(400).send({
-      errorsMessages: [
-        {
-          message: 'Incorrect shortDescription',
-          field: 'shortDescription',
-        },
-        {
-          message: 'Incorrect title',
-          field: 'title',
-        },
-      ],
+  if (!title || typeof title !== 'string' || !title.trim() || title.length > 30) {
+    errorsMessage.push({
+      message: 'Incorrect title',
+      field: 'title',
     });
+  }
+  if (!descript || typeof descript !== 'string' || !descript.trim() || descript.length > 100) {
+    errorsMessage.push({
+      message: 'Incorrect shortDescription',
+      field: 'shortDescription',
+    });
+  }
+  if (!content || typeof content !== 'string' || !content.trim() || content.length > 1000) {
+    errorsMessage.push({
+      message: 'Incorrect content',
+      field: 'content',
+    });
+  }
+  if (!bloggerId || typeof bloggerId !== 'number') {
+    errorsMessage.push({
+      message: 'Incorrect bloggerId',
+      field: 'bloggerId',
+    });
+  }
+
+  if (errorsMessage.length > 0) {
+    res.status(400).send({ errorsMessages: errorsMessage });
     return;
   }
 
@@ -200,40 +200,40 @@ app.post('/posts', (req: Request, res: Response) => {
 });
 
 app.put('/posts/:postId', (req: Request, res: Response) => {
+  const errorsMessage: ErrorsMessage[] = [];
   let title = req.body.title;
   let descript = req.body.shortDescription;
   let content = req.body.content;
   let bloggerId = +req.body.bloggerId;
   const blogger = bloggers.find((blogger) => bloggerId === blogger.id);
 
-  if (
-    !title ||
-    typeof title !== 'string' ||
-    !title.trim() ||
-    title.length > 30 ||
-    !descript ||
-    typeof descript !== 'string' ||
-    !descript.trim() ||
-    descript.length > 100 ||
-    !content ||
-    typeof content !== 'string' ||
-    !content.trim() ||
-    content.length > 1000 ||
-    !bloggerId ||
-    typeof bloggerId !== 'number'
-  ) {
-    res.status(400).send({
-      errorsMessages: [
-        {
-          message: 'Incorrect shortDescription',
-          field: 'shortDescription',
-        },
-        {
-          message: 'Incorrect title',
-          field: 'title',
-        },
-      ],
+  if (!title || typeof title !== 'string' || !title.trim() || title.length > 30) {
+    errorsMessage.push({
+      message: 'Incorrect title',
+      field: 'title',
     });
+  }
+  if (!descript || typeof descript !== 'string' || !descript.trim() || descript.length > 100) {
+    errorsMessage.push({
+      message: 'Incorrect shortDescription',
+      field: 'shortDescription',
+    });
+  }
+  if (!content || typeof content !== 'string' || !content.trim() || content.length > 1000) {
+    errorsMessage.push({
+      message: 'Incorrect content',
+      field: 'content',
+    });
+  }
+  if (!bloggerId || typeof bloggerId !== 'number') {
+    errorsMessage.push({
+      message: 'Incorrect bloggerId',
+      field: 'bloggerId',
+    });
+  }
+
+  if (errorsMessage.length > 0) {
+    res.status(400).send({ errorsMessages: errorsMessage });
     return;
   }
 
