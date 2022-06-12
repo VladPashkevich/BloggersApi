@@ -66,12 +66,12 @@ app.post('/bloggers', (req: Request, res: Response) => {
     res.status(400).send({
       errormessages: [
         {
-          message: 'Incorect name',
-          field: 'name',
+          message: 'Incorrect youtubeUrl',
+          field: 'youtubeUrl',
         },
         {
-          message: 'Incorect url',
-          field: 'url',
+          message: 'Incorrect name',
+          field: 'name',
         },
       ],
     });
@@ -104,12 +104,12 @@ app.put('/bloggers/:bloggerId', (req: Request, res: Response) => {
     res.status(400).send({
       errormessages: [
         {
-          message: 'Incorect name',
-          field: 'name',
+          message: 'Incorrect youtubeUrl',
+          field: 'youtubeUrl',
         },
         {
-          message: 'Incorect url',
-          field: 'url',
+          message: 'Incorrect name',
+          field: 'name',
         },
       ],
     });
@@ -167,12 +167,12 @@ app.post('/posts', (req: Request, res: Response) => {
     res.status(400).send({
       errormessages: [
         {
-          message: 'Incorect title',
-          field: 'title',
+          message: 'Incorrect shortDescription',
+          field: 'shortDescription',
         },
         {
-          message: 'Incorect descript',
-          field: 'descript',
+          message: 'Incorrect title',
+          field: 'title',
         },
       ],
     });
@@ -221,12 +221,12 @@ app.put('/posts/:postId', (req: Request, res: Response) => {
     res.status(400).send({
       errormessages: [
         {
-          message: 'Incorect title',
-          field: 'title',
+          message: 'Incorrect shortDescription',
+          field: 'shortDescription',
         },
         {
-          message: 'Incorect descript',
-          field: 'descript',
+          message: 'Incorrect title',
+          field: 'title',
         },
       ],
     });
