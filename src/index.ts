@@ -70,11 +70,10 @@ app.post('/bloggers', (req: Request, res: Response) => {
   }
   if (errorsMessage.length > 0) {
     res.status(400).send(errorsMessage);
-  };
-  return;
-},
+    return;
+  }
 
-const newBlogger = {
+  const newBlogger = {
     id: +new Date(),
     name: name,
     youtubeUrl: url,
