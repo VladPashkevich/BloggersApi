@@ -64,7 +64,7 @@ app.post('/bloggers', (req: Request, res: Response) => {
     url.length > 100
   ) {
     res.status(400).send({
-      errormessages: [
+      errorsMessages: [
         {
           message: 'Incorrect youtubeUrl',
           field: 'youtubeUrl',
@@ -102,7 +102,7 @@ app.put('/bloggers/:bloggerId', (req: Request, res: Response) => {
     url.length > 100
   ) {
     res.status(400).send({
-      errormessages: [
+      errorsMessages: [
         {
           message: 'Incorrect youtubeUrl',
           field: 'youtubeUrl',
@@ -165,7 +165,7 @@ app.post('/posts', (req: Request, res: Response) => {
     typeof bloggerId !== 'number'
   ) {
     res.status(400).send({
-      errormessages: [
+      errorsMessages: [
         {
           message: 'Incorrect shortDescription',
           field: 'shortDescription',
@@ -219,7 +219,7 @@ app.put('/posts/:postId', (req: Request, res: Response) => {
     typeof bloggerId !== 'number'
   ) {
     res.status(400).send({
-      errormessages: [
+      errorsMessages: [
         {
           message: 'Incorrect shortDescription',
           field: 'shortDescription',
