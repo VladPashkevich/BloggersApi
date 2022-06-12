@@ -110,13 +110,13 @@ app.put('/bloggers/:bloggerId', (req: Request, res: Response) => {
     blogger.name = name;
     res.status(204).send(blogger);
   } else {
-    res.sendStatus(404);
+    res.send(404);
   }
 });
 
 app.delete('/bloggers/:bloggerId', (req: Request, res: Response) => {
   const id = +req.params.bloggerId;
-  const index = bloggers.findIndex((v) => v.id !== id);
+  const index = bloggers.findIndex((v) => v.id === id);
 
   if (index === -1) {
     res.sendStatus(404);
@@ -267,7 +267,7 @@ app.get('/posts/:postId', (req: Request, res: Response) => {
 
 app.delete('/posts/:postId', (req: Request, res: Response) => {
   const id = +req.params.bloggerId;
-  const index = posts.findIndex((v) => v.id !== id);
+  const index = posts.findIndex((v) => v.id === id);
 
   if (index === -1) {
     res.sendStatus(404);
