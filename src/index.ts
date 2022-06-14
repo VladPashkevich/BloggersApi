@@ -6,14 +6,14 @@ import { postsRouter } from './routers/posts-router';
 
 const app = express();
 const basicAuth = require('express-basic-auth');
-
-app.use(cors());
-app.use(bodyParser.json());
 app.use(
   basicAuth({
     users: { admin: 'qwerty' },
   }),
 );
+app.use(cors());
+app.use(bodyParser.json());
+
 app.use('/bloggers', bloggersRouter);
 app.use('/posts', postsRouter);
 
