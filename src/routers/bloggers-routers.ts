@@ -1,6 +1,6 @@
 import { Request, Response, Router } from 'express';
 import expressBasicAuth from 'express-basic-auth';
-import { bloggerIDValidator } from '../middlewares/idValidator';
+import { paramBloggerIDValidator } from '../middlewares/idValidator';
 import { inputValidationMiddleware } from '../middlewares/inputValidationMiddleware';
 import { nameValidator } from '../middlewares/nameValidator';
 import { youtubeUrlValidator } from '../middlewares/youtubeUrlValidator';
@@ -14,7 +14,7 @@ bloggersRouter.get('/', (req: Request, res: Response) => {
   res.send(allBloggers);
 });
 
-bloggersRouter.get('/:bloggerId', bloggerIDValidator, (req: Request, res: Response) => {
+bloggersRouter.get('/:bloggerId', paramBloggerIDValidator, (req: Request, res: Response) => {
   const blogger = bloggersRepository.getBloggersById(+req.params.bloggerId);
   if (blogger) {
     res.send(blogger);
@@ -38,7 +38,7 @@ bloggersRouter.post(
 bloggersRouter.put(
   '/:bloggerId',
   basicAuth,
-  bloggerIDValidator,
+  paramBloggerIDValidator,
   nameValidator,
   youtubeUrlValidator,
   inputValidationMiddleware,
@@ -60,7 +60,7 @@ bloggersRouter.put(
 bloggersRouter.delete(
   '/:bloggerId',
   basicAuth,
-  bloggerIDValidator,
+  paramBloggerIDValidator,
   (req: Request, res: Response) => {
     const isDelete = bloggersRepository.deleteBloggerById(+req.params.bloggerId);
     if (isDelete) {

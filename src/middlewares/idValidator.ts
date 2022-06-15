@@ -1,6 +1,6 @@
 import { param } from 'express-validator';
 
-export const bloggerIDValidator = param('bloggerId')
+export const paramBloggerIDValidator = param('bloggerId')
   .exists()
   .withMessage('Value should be exists')
   .notEmpty()
@@ -8,7 +8,7 @@ export const bloggerIDValidator = param('bloggerId')
   .isInt({ min: 1 })
   .withMessage('Value should be number');
 
-export const postIDValidator = param('postId')
+export const paramPostIDValidator = param('postId')
   .exists()
   .withMessage('Value should be exists')
   .notEmpty()

@@ -1,7 +1,7 @@
 import { Request, Response, Router } from 'express';
-import { bloggerIdValidator } from '../middlewares/bloggerIdValidator';
+import { bodyBloggerIDValidator } from '../middlewares/bloggerIdValidator';
 import { contentValidator } from '../middlewares/contentValidator';
-import { postIDValidator } from '../middlewares/idValidator';
+import { paramPostIDValidator } from '../middlewares/idValidator';
 import { inputValidationMiddleware } from '../middlewares/inputValidationMiddleware';
 import { shortDescriptionValidator } from '../middlewares/shortDescriptionValidator';
 import { titleValidator } from '../middlewares/titleValidator';
@@ -21,7 +21,7 @@ postsRouter.post(
   titleValidator,
   shortDescriptionValidator,
   contentValidator,
-  bloggerIdValidator,
+  bodyBloggerIDValidator,
   inputValidationMiddleware,
   (req: Request, res: Response) => {
     const post = postsRepository.createdPosts(
@@ -41,11 +41,11 @@ postsRouter.post(
 postsRouter.put(
   '/:postId',
   basicAuth,
-  postIDValidator,
+  paramPostIDValidator,
   titleValidator,
   shortDescriptionValidator,
   contentValidator,
-  bloggerIdValidator,
+  bodyBloggerIDValidator,
   inputValidationMiddleware,
   (req: Request, res: Response) => {
     const updatePost = postsRepository.updatePosts(
@@ -63,7 +63,7 @@ postsRouter.put(
   },
 );
 
-postsRouter.get('/:postId', postIDValidator, (req: Request, res: Response) => {
+postsRouter.get('/:postId', paramPostIDValidator, (req: Request, res: Response) => {
   const post = postsRepository.getPostsById(+req.params.postId);
   if (post) {
     res.status(200).send(post);
@@ -72,7 +72,7 @@ postsRouter.get('/:postId', postIDValidator, (req: Request, res: Response) => {
   }
 });
 
-postsRouter.delete('/:postId', basicAuth, postIDValidator, (req: Request, res: Response) => {
+postsRouter.delete('/:postId', basicAuth, paramPostIDValidator, (req: Request, res: Response) => {
   const isDelete = postsRepository.deletePostsById(+req.params.postId);
 
   if (isDelete) {
