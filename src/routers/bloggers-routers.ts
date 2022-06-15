@@ -54,7 +54,7 @@ bloggersRouter.put(
   },
 );
 
-bloggersRouter.delete('/:bloggerId', expressBasicAuth, (req: Request, res: Response) => {
+bloggersRouter.delete('/:bloggerId', (req: Request, res: Response) => {
   const isDelete = bloggersRepository.deleteBloggerById(+req.params.bloggerId);
   if (isDelete) {
     res.send(204);
