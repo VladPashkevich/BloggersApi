@@ -6,7 +6,6 @@ const urlRegexp = new RegExp('^https://([a-zA-Z0-9_-]+.)+[a-zA-Z0-9_-]+(/[a-zA-Z
 export const youtubeUrlValidator = body('youtubeUrl')
   .exists()
   .trim()
-  .notEmpty()
   .withMessage('Missing a required parametr')
   .isLength({ max: urlMaxLength })
   .withMessage(`Length should be less then ${urlMaxLength}`)
