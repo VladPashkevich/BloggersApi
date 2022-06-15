@@ -4,7 +4,8 @@ const contentMaxLength = 1000;
 
 export const contentValidator = body('content')
   .trim()
-  .withMessage('Missing a required parametr')
+
   .notEmpty()
+  .withMessage('Missing a required parametr')
   .isLength({ max: contentMaxLength })
   .withMessage(`Title shoud be less then ${contentMaxLength}`);
