@@ -3,12 +3,13 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import { bloggersRouter } from './routers/bloggers-routers';
 import { postsRouter } from './routers/posts-router';
-
+import basicAuth from 'express-basic-auth';
 const app = express();
-const basicAuth = require('express-basic-auth');
+
 app.use(
   basicAuth({
     users: { admin: 'qwerty' },
+    challenge: true,
   }),
 );
 app.use(cors());
