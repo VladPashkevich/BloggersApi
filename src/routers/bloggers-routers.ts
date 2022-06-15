@@ -24,7 +24,6 @@ bloggersRouter.get('/:bloggerId', (req: Request, res: Response) => {
 
 bloggersRouter.post(
   '/',
-  expressBasicAuth,
   nameValidator,
   youtubeUrlValidator,
   inputValidationMiddleware,
@@ -36,7 +35,6 @@ bloggersRouter.post(
 
 bloggersRouter.put(
   '/:bloggerId',
-  expressBasicAuth,
   idValidator,
   nameValidator,
   youtubeUrlValidator,
