@@ -1,7 +1,7 @@
 import { Request, Response, Router } from 'express';
 import { bloggerIdValidator } from '../middlewares/bloggerIdValidator';
 import { contentValidator } from '../middlewares/contentValidator';
-import { idValidator } from '../middlewares/idValidator';
+import { postIDValidator } from '../middlewares/idValidator';
 import { inputValidationMiddleware } from '../middlewares/inputValidationMiddleware';
 import { shortDescriptionValidator } from '../middlewares/shortDescriptionValidator';
 import { titleValidator } from '../middlewares/titleValidator';
@@ -41,7 +41,7 @@ postsRouter.post(
 postsRouter.put(
   '/:postId',
   basicAuth,
-  idValidator,
+  postIDValidator,
   titleValidator,
   shortDescriptionValidator,
   contentValidator,
@@ -63,7 +63,7 @@ postsRouter.put(
   },
 );
 
-postsRouter.get('/:postId', (req: Request, res: Response) => {
+postsRouter.get('/:postId', postIDValidator, (req: Request, res: Response) => {
   const post = postsRepository.getPostsById(+req.params.postId);
   if (post) {
     res.status(200).send(post);
@@ -72,7 +72,7 @@ postsRouter.get('/:postId', (req: Request, res: Response) => {
   }
 });
 
-postsRouter.delete('/:postId', basicAuth, (req: Request, res: Response) => {
+postsRouter.delete('/:postId', basicAuth, postIDValidator, (req: Request, res: Response) => {
   const isDelete = postsRepository.deletePostsById(+req.params.postId);
 
   if (isDelete) {
