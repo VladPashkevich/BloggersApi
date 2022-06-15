@@ -6,5 +6,6 @@ export const contentValidator = body('content')
   .exists()
   .trim()
   .withMessage('Missing a required parametr')
+  .notEmpty()
   .isLength({ max: contentMaxLength })
   .withMessage(`Title shoud be less then ${contentMaxLength}`);
