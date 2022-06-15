@@ -5,6 +5,7 @@ import { inputValidationMiddleware } from '../middlewares/inputValidationMiddlew
 import { nameValidator } from '../middlewares/nameValidator';
 import { youtubeUrlValidator } from '../middlewares/youtubeUrlValidator';
 import { bloggersRepository } from '../repositories/bloggers-repository';
+import basicAuth from '../middlewares/basicAuth';
 
 export const bloggersRouter = Router({});
 
@@ -24,6 +25,7 @@ bloggersRouter.get('/:bloggerId', (req: Request, res: Response) => {
 
 bloggersRouter.post(
   '/',
+  basicAuth,
   nameValidator,
   youtubeUrlValidator,
   inputValidationMiddleware,
@@ -35,6 +37,7 @@ bloggersRouter.post(
 
 bloggersRouter.put(
   '/:bloggerId',
+  basicAuth,
   idValidator,
   nameValidator,
   youtubeUrlValidator,
@@ -54,7 +57,7 @@ bloggersRouter.put(
   },
 );
 
-bloggersRouter.delete('/:bloggerId', (req: Request, res: Response) => {
+bloggersRouter.delete('/:bloggerId',basicAuth, (req: Request, res: Response) => {
   const isDelete = bloggersRepository.deleteBloggerById(+req.params.bloggerId);
   if (isDelete) {
     res.send(204);

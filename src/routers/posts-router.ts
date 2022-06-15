@@ -6,6 +6,7 @@ import { inputValidationMiddleware } from '../middlewares/inputValidationMiddlew
 import { shortDescriptionValidator } from '../middlewares/shortDescriptionValidator';
 import { titleValidator } from '../middlewares/titleValidator';
 import { postsRepository } from '../repositories/posts-repository';
+import basicAuth from '../middlewares/basicAuth';
 
 export const postsRouter = Router({});
 
@@ -16,6 +17,7 @@ postsRouter.get('/', (req: Request, res: Response) => {
 
 postsRouter.post(
   '/',
+  basicAuth,
   titleValidator,
   shortDescriptionValidator,
   contentValidator,
@@ -38,6 +40,7 @@ postsRouter.post(
 
 postsRouter.put(
   '/:postId',
+  basicAuth,
   idValidator,
   titleValidator,
   shortDescriptionValidator,
@@ -69,7 +72,7 @@ postsRouter.get('/:postId', (req: Request, res: Response) => {
   }
 });
 
-postsRouter.delete('/:postId', (req: Request, res: Response) => {
+postsRouter.delete('/:postId', basicAuth, (req: Request, res: Response) => {
   const isDelete = postsRepository.deletePostsById(+req.params.postId);
 
   if (isDelete) {
