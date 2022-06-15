@@ -3,7 +3,7 @@ import { validationResult, ValidationError } from 'express-validator';
 
 export const inputValidationMiddleware = (req: Request, res: Response, next: NextFunction) => {
   const errorFormatter = ({ msg, param }: ValidationError) => {
-    return { message: msg, fields: param };
+    return { message: msg, field: param };
   };
 
   const errors = validationResult(req).formatWith(errorFormatter);
