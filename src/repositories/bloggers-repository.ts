@@ -22,7 +22,7 @@ export const bloggersRepository = {
 
   createdBlogger(name: string, youtubeUrl: string) {
     const newBlogger = {
-      id: +new Date(),
+      id: Math.floor(Math.random() * 2147483647),
       name: name,
       youtubeUrl: youtubeUrl,
     };
