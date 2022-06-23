@@ -13,12 +13,17 @@ export const bloggersRepository = {
     pageSize: number,
     searchNameTerm: string,
   ): Promise<BloggersData> {
-    const bloggers = await bloggersCollection
+    const bloggersFromDb = await bloggersCollection
       .find({ name: { $regex: searchNameTerm } })
       .limit(pageSize)
       .skip((pageNumber - 1) * pageSize)
       .toArray();
     const totalCount = await bloggersCollection.countDocuments();
+    let bloggers = bloggersFromDb.map((b) => ({
+      id: b.id,
+      name: b.name,
+      youtubeUrl: b.youtubeUrl,
+    }));
     return {
       bloggers: bloggers,
       totalCount: totalCount,
@@ -27,7 +32,14 @@ export const bloggersRepository = {
 
   async getBloggersById(id: number): Promise<BloggersTypes | null> {
     const blogger = await bloggersCollection.findOne({ id: id });
-    return blogger;
+    if (blogger) {
+      return {
+        id: blogger.id,
+        name: blogger.name,
+        youtubeUrl: blogger.youtubeUrl,
+      };
+    }
+    return null;
   },
 
   async deleteBloggerById(id: number): Promise<boolean> {
