@@ -8,7 +8,6 @@ export const bodyBloggerIDValidator = body('bloggerId')
   .withMessage('Value should be number')
   .custom(async (bloggerId) => {
     const blogger = await bloggersService.getBloggersById(+bloggerId);
-    console.log(blogger);
     if (!blogger) {
       throw new Error('BloggerId does not exists');
     }

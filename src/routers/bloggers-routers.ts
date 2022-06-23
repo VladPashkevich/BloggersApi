@@ -14,8 +14,9 @@ export const bloggersRouter = Router({});
 
 bloggersRouter.get('/', async (req: Request, res: Response) => {
   const searchNameTerm = (req.query.searchNameTerm as string) || '';
-  const pageNumber = Number(req.query.pageNumber) || 1;
-  const pageSize = Number(req.query.pageSize) || 10;
+  const pageNumber = Number(req.query.PageNumber) || 1;
+  const pageSize = Number(req.query.PageSize) || 10;
+  console.log(req.query.PageNumber, req.query.PageSize);
   const allBloggers = await bloggersService.getBloggers(pageNumber, pageSize, searchNameTerm);
   res.send(allBloggers);
 });
@@ -34,8 +35,8 @@ bloggersRouter.get('/:bloggerId/posts', async (req: Request, res: Response) => {
   if (!blogger) {
     return res.send(404);
   }
-  const pageNumber = Number(req.query.pageNumber) || 1;
-  const pageSize = Number(req.query.pageSize) || 10;
+  const pageNumber = Number(req.query.PageNumber) || 1;
+  const pageSize = Number(req.query.PageSize) || 10;
   const allPostsOfBlogger = await bloggersService.getPostsByBloggerId(
     +req.params.bloggerId,
     pageNumber,

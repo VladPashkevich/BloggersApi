@@ -11,8 +11,8 @@ import basicAuth from '../middlewares/basicAuth';
 export const postsRouter = Router({});
 
 postsRouter.get('/', async (req: Request, res: Response) => {
-  const pageNumber = Number(req.query.pageNumber) || 1;
-  const pageSize = Number(req.query.pageSize) || 10;
+  const pageNumber = Number(req.query.PageNumber) || 1;
+  const pageSize = Number(req.query.PageSize) || 10;
   const allPosts = await postsService.getPosts(pageNumber, pageSize);
   res.status(200).send(allPosts);
 });
