@@ -10,7 +10,7 @@ interface PostsData {
 export const postsRepository = {
   async getPosts(pageNumber: number, pageSize: number): Promise<PostsData> {
     const posts = await postsCollection
-      .find({})
+      .find({}, { projection: { _id: 0 } })
       .limit(pageSize)
       .skip((pageNumber - 1) * pageSize)
       .toArray();
@@ -39,7 +39,7 @@ export const postsRepository = {
   },
 
   async getPostsById(id: number): Promise<PostsType | null> {
-    const post = await postsCollection.findOne({ id: id });
+    const post = await postsCollection.findOne({ id: id }, { projection: { _id: 0 } });
     return post;
   },
 
