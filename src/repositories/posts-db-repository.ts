@@ -27,7 +27,7 @@ export const postsRepository = {
     pageSize: number,
   ): Promise<PostsData> {
     const posts = await postsCollection
-      .find({ bloggerId: bloggerId })
+      .find({ bloggerId: bloggerId }, { projection: { _id: 0 } })
       .limit(pageSize)
       .skip((pageNumber - 1) * pageSize)
       .toArray();
