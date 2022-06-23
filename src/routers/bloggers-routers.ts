@@ -102,7 +102,7 @@ bloggersRouter.put(
     );
 
     if (updateBlogger) {
-      res.status(204);
+      res.sendStatus(204);
     } else {
       res.send(404);
     }
