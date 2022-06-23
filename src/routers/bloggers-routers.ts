@@ -62,7 +62,6 @@ bloggersRouter.post(
   titleValidator,
   shortDescriptionValidator,
   contentValidator,
-  paramBloggerIdValidator,
   inputValidationMiddleware,
   async (req: Request, res: Response) => {
     const blogger = await bloggersService.getBloggersById(+req.params.bloggerId);
