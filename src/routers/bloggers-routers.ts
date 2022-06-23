@@ -61,6 +61,7 @@ bloggersRouter.post(
   basicAuth,
   titleValidator,
   shortDescriptionValidator,
+  paramBloggerIdValidator,
   contentValidator,
   inputValidationMiddleware,
   async (req: Request, res: Response) => {

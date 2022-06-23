@@ -18,7 +18,9 @@ export const bloggersRepository = {
       .limit(pageSize)
       .skip((pageNumber - 1) * pageSize)
       .toArray();
-    const totalCount = await bloggersCollection.countDocuments();
+    const totalCount = await bloggersCollection.countDocuments({
+      name: { $regex: searchNameTerm },
+    });
     let bloggers = bloggersFromDb.map((b) => ({
       id: b.id,
       name: b.name,
