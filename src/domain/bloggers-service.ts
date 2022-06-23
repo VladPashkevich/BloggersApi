@@ -14,7 +14,7 @@ export const bloggersService = {
       searchNameTerm,
     );
     const result: BloggersDBType = {
-      pagesCount: Math.ceil(bloggers.length / pageSize),
+      pagesCount: Math.ceil(totalCount / pageSize),
       page: pageNumber,
       pageSize: pageSize,
       totalCount: totalCount,
@@ -33,7 +33,7 @@ export const bloggersService = {
       pageSize,
     );
     const result: PostsDBType = {
-      pagesCount: Math.ceil(posts.length / 10),
+      pagesCount: Math.ceil(totalCount / 10),
       page: pageNumber,
       pageSize: pageSize,
       totalCount: totalCount,

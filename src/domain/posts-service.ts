@@ -6,7 +6,7 @@ export const postsService = {
   async getPosts(pageNumber: number, pageSize: number): Promise<PostsDBType> {
     const { posts, totalCount } = await postsRepository.getPosts(pageNumber, pageSize);
     const result: PostsDBType = {
-      pagesCount: Math.ceil(posts.length / 10),
+      pagesCount: Math.ceil(totalCount / pageSize),
       page: pageNumber,
       pageSize: pageSize,
       totalCount: totalCount,
