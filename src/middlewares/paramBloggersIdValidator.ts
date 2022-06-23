@@ -1,14 +1,13 @@
-import { body } from 'express-validator';
+import { param } from 'express-validator';
 import { bloggersService } from '../domain/bloggers-service';
 
-export const bodyBloggerIDValidator = body('bloggerId')
+export const paramBloggerIdValidator = param('bloggerId')
   .trim()
   .notEmpty()
   .isInt({ min: 1 })
   .withMessage('Value should be number')
   .custom(async (bloggerId) => {
     const blogger = await bloggersService.getBloggersById(+bloggerId);
-    console.log(blogger);
     if (!blogger) {
       throw new Error('BloggerId does not exists');
     }

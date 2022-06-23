@@ -5,13 +5,15 @@ import { paramPostIDValidator } from '../middlewares/idValidator';
 import { inputValidationMiddleware } from '../middlewares/inputValidationMiddleware';
 import { shortDescriptionValidator } from '../middlewares/shortDescriptionValidator';
 import { titleValidator } from '../middlewares/titleValidator';
-import { postsRepository } from '../repositories/posts-repository';
+import { postsService } from '../domain/posts-service';
 import basicAuth from '../middlewares/basicAuth';
 
 export const postsRouter = Router({});
 
-postsRouter.get('/', (req: Request, res: Response) => {
-  const allPosts = postsRepository.getPosts();
+postsRouter.get('/', async (req: Request, res: Response) => {
+  const pageNumber = Number(req.query.pageNumber) || 1;
+  const pageSize = Number(req.query.pageSize) || 10;
+  const allPosts = await postsService.getPosts(pageNumber, pageSize);
   res.status(200).send(allPosts);
 });
 
@@ -23,8 +25,8 @@ postsRouter.post(
   contentValidator,
   bodyBloggerIDValidator,
   inputValidationMiddleware,
-  (req: Request, res: Response) => {
-    const post = postsRepository.createdPosts(
+  async (req: Request, res: Response) => {
+    const post = postsService.createdPosts(
       req.body.title,
       req.body.shortDescription,
       req.body.content,
@@ -47,8 +49,8 @@ postsRouter.put(
   contentValidator,
   bodyBloggerIDValidator,
   inputValidationMiddleware,
-  (req: Request, res: Response) => {
-    const updatePost = postsRepository.updatePosts(
+  async (req: Request, res: Response) => {
+    const updatePost = postsService.updatePosts(
       +req.params.postId,
       req.body.title,
       req.body.shortDescription,
@@ -63,8 +65,8 @@ postsRouter.put(
   },
 );
 
-postsRouter.get('/:postId', paramPostIDValidator, (req: Request, res: Response) => {
-  const post = postsRepository.getPostsById(+req.params.postId);
+postsRouter.get('/:postId', paramPostIDValidator, async (req: Request, res: Response) => {
+  const post = await postsService.getPostsById(+req.params.postId);
   if (post) {
     res.status(200).send(post);
   } else {
@@ -72,12 +74,17 @@ postsRouter.get('/:postId', paramPostIDValidator, (req: Request, res: Response) 
   }
 });
 
-postsRouter.delete('/:postId', basicAuth, paramPostIDValidator, (req: Request, res: Response) => {
-  const isDelete = postsRepository.deletePostsById(+req.params.postId);
+postsRouter.delete(
+  '/:postId',
+  basicAuth,
+  paramPostIDValidator,
+  async (req: Request, res: Response) => {
+    const isDelete = await postsService.deletePostsById(+req.params.postId);
 
-  if (isDelete) {
-    res.send(204);
-  } else {
-    res.sendStatus(404);
-  }
-});
+    if (isDelete) {
+      res.send(204);
+    } else {
+      res.sendStatus(404);
+    }
+  },
+);
