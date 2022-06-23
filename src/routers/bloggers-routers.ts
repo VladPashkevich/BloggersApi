@@ -16,7 +16,6 @@ bloggersRouter.get('/', async (req: Request, res: Response) => {
   const searchNameTerm = (req.query.SearchNameTerm as string) || '';
   const pageNumber = Number(req.query.PageNumber) || 1;
   const pageSize = Number(req.query.PageSize) || 10;
-  console.log(req.query.PageNumber, req.query.PageSize);
   const allBloggers = await bloggersService.getBloggers(pageNumber, pageSize, searchNameTerm);
   res.send(allBloggers);
 });
@@ -70,7 +69,7 @@ bloggersRouter.post(
     if (!blogger) {
       return res.send(404);
     }
-    const post = bloggersService.createdPostByBloggerId(
+    const post = await bloggersService.createdPostByBloggerId(
       req.body.title,
       req.body.shortDescription,
       req.body.content,
