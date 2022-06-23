@@ -91,6 +91,10 @@ bloggersRouter.put(
   youtubeUrlValidator,
   inputValidationMiddleware,
   async (req: Request, res: Response) => {
+    const blogger = await bloggersService.getBloggersById(+req.params.bloggerId);
+    if (!blogger) {
+      return res.send(404);
+    }
     const updateBlogger = await bloggersService.updateBlogger(
       +req.params.bloggerId,
       req.body.name,

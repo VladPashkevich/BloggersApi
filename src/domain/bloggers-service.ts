@@ -33,7 +33,7 @@ export const bloggersService = {
       pageSize,
     );
     const result: PostsDBType = {
-      pagesCount: Math.ceil(totalCount / 10),
+      pagesCount: Math.ceil(totalCount / pageSize),
       page: pageNumber,
       pageSize: pageSize,
       totalCount: totalCount,

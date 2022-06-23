@@ -26,7 +26,7 @@ postsRouter.post(
   bodyBloggerIDValidator,
   inputValidationMiddleware,
   async (req: Request, res: Response) => {
-    const post = postsService.createdPosts(
+    const post = await postsService.createdPosts(
       req.body.title,
       req.body.shortDescription,
       req.body.content,
@@ -50,7 +50,11 @@ postsRouter.put(
   bodyBloggerIDValidator,
   inputValidationMiddleware,
   async (req: Request, res: Response) => {
-    const updatePost = postsService.updatePosts(
+    const post = await postsService.getPostsById(+req.params.postId);
+    if (!post) {
+      return res.send(404);
+    }
+    const updatePost = await postsService.updatePosts(
       +req.params.postId,
       req.body.title,
       req.body.shortDescription,
