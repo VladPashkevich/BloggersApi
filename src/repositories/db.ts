@@ -1,4 +1,3 @@
-import 'dotenv/config';
 import { MongoClient } from 'mongodb';
 import { settings } from '../settings';
 import { BloggersType, CommentsType, PostsType, UsersType } from './types';

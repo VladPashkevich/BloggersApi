@@ -1,6 +1,5 @@
 import { param } from 'express-validator';
 import { ObjectId } from 'mongodb';
-import { commentsService } from '../domain/comments-service';
 import { commentsRepository } from '../repositories/comments-db-repository';
 import { Request, Response, NextFunction } from 'express';
 
