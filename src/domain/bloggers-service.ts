@@ -1,6 +1,7 @@
+import { ObjectId } from 'mongodb';
 import { bloggersRepository } from '../repositories/bloggers-db-repository';
 import { postsRepository } from '../repositories/posts-db-repository';
-import { BloggersTypes, BloggersDBType, PostsDBType, PostsType } from '../repositories/types';
+import { BloggersType, BloggersDBType, PostsDBType, PostsType } from '../repositories/types';
 
 export const bloggersService = {
   async getBloggers(
@@ -23,7 +24,7 @@ export const bloggersService = {
     return result;
   },
   async getPostsByBloggerId(
-    bloggerId: number,
+    bloggerId: ObjectId,
     pageNumber: number,
     pageSize: number,
   ): Promise<PostsDBType> {
@@ -42,48 +43,52 @@ export const bloggersService = {
     return result;
   },
 
-  async getBloggersById(id: number): Promise<BloggersTypes | null> {
+  async getBloggersById(id: ObjectId): Promise<BloggersType | null> {
     return bloggersRepository.getBloggersById(id);
   },
 
-  async deleteBloggerById(id: number): Promise<boolean> {
+  async deleteBloggerById(id: ObjectId): Promise<boolean> {
     return bloggersRepository.deleteBloggerById(id);
   },
 
-  async createdBlogger(name: string, youtubeUrl: string): Promise<BloggersTypes> {
+  async createdBlogger(name: string, youtubeUrl: string): Promise<BloggersType | null> {
     const newBlogger = {
-      id: +new Date(),
+      id: new ObjectId(),
       name: name,
       youtubeUrl: youtubeUrl,
     };
     const creatededBlogger = await bloggersRepository.createdBlogger(newBlogger);
-    return creatededBlogger;
+    if (creatededBlogger) {
+      return newBlogger;
+    }
+
+    return null;
   },
 
   async createdPostByBloggerId(
     title: string,
     shortDescription: string,
     content: string,
-    bloggerId: number,
+    bloggerId: ObjectId,
   ): Promise<PostsType | null> {
     const blogger = await bloggersRepository.getBloggersById(bloggerId);
     if (blogger) {
       const newPost = {
-        id: +new Date(),
+        id: new ObjectId(),
         title: title,
         shortDescription: shortDescription,
         content: content,
         bloggerId: bloggerId,
         bloggerName: blogger.name,
       };
-      const creatededPost = await postsRepository.createdPosts(newPost);
-      return creatededPost;
+      await postsRepository.createdPosts(newPost);
+      return newPost;
     } else {
       return null;
     }
   },
 
-  async updateBlogger(id: number, name: string, youtubeUrl: string): Promise<boolean> {
+  async updateBlogger(id: ObjectId, name: string, youtubeUrl: string): Promise<boolean> {
     return bloggersRepository.updateBlogger(id, name, youtubeUrl);
   },
 };

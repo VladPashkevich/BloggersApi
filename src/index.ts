@@ -4,6 +4,11 @@ import bodyParser from 'body-parser';
 import { bloggersRouter } from './routers/bloggers-routers';
 import { postsRouter } from './routers/posts-router';
 import { runDb } from './repositories/db';
+import { usersRouter } from './routers/users-router';
+import { commentsRouter } from './routers/comments-router';
+import { authRouter } from './routers/auth-router';
+import * as dotenv from 'dotenv';
+dotenv.config({ path: __dirname + '/.env' });
 
 const app = express();
 
@@ -12,10 +17,14 @@ app.use(bodyParser.json());
 
 app.use('/bloggers', bloggersRouter);
 app.use('/posts', postsRouter);
+app.use('/users', usersRouter);
+app.use('/comments', commentsRouter);
+app.use('/', authRouter);
 
 const port = process.env.PORT || 5000;
 
 const startApp = async () => {
+  console.log(process.env.mongoUri);
   await runDb();
   app.listen(port, () => {
     console.log(`Example app listening on port ${port}`);

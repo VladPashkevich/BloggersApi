@@ -1,6 +1,9 @@
+import { ObjectId } from 'mongodb';
 import { bloggersRepository } from '../repositories/bloggers-db-repository';
+import { commentsRepository } from '../repositories/comments-db-repository';
 import { postsRepository } from '../repositories/posts-db-repository';
-import { PostsDBType, PostsType } from '../repositories/types';
+import { CommentsDBType, CommentsType, PostsDBType, PostsType } from '../repositories/types';
+import { usersRepository } from '../repositories/users-db-repository';
 
 export const postsService = {
   async getPosts(pageNumber: number, pageSize: number): Promise<PostsDBType> {
@@ -16,11 +19,31 @@ export const postsService = {
     return result;
   },
 
-  async getPostsById(id: number): Promise<PostsType | null> {
+  async getCommentsByPostId(
+    postId: ObjectId,
+    pageNumber: number,
+    pageSize: number,
+  ): Promise<CommentsDBType> {
+    const { comments, totalCount } = await commentsRepository.getCommentsByPostId(
+      postId,
+      pageNumber,
+      pageSize,
+    );
+    const result: CommentsDBType = {
+      pagesCount: Math.ceil(totalCount / pageSize),
+      page: pageNumber,
+      pageSize: pageSize,
+      totalCount: totalCount,
+      items: comments,
+    };
+    return result;
+  },
+
+  async getPostsById(id: ObjectId): Promise<PostsType | null> {
     return postsRepository.getPostsById(id);
   },
 
-  async deletePostsById(id: number): Promise<boolean> {
+  async deletePostsById(id: ObjectId): Promise<boolean> {
     return postsRepository.deletePostsById(id);
   },
 
@@ -28,31 +51,56 @@ export const postsService = {
     title: string,
     shortDescription: string,
     content: string,
-    bloggerId: number,
+    bloggerId: ObjectId,
   ): Promise<PostsType | null> {
     const blogger = await bloggersRepository.getBloggersById(bloggerId);
-    if (blogger) {
-      const newPost = {
-        id: +new Date(),
-        title: title,
-        shortDescription: shortDescription,
-        content: content,
-        bloggerId: bloggerId,
-        bloggerName: blogger.name,
-      };
-      const creatededPost = await postsRepository.createdPosts(newPost);
-      return creatededPost;
+
+    const newPost = {
+      id: new ObjectId(),
+      title: title,
+      shortDescription: shortDescription,
+      content: content,
+      bloggerId: bloggerId,
+      bloggerName: blogger!.name,
+    };
+    const creatededPost = await postsRepository.createdPosts(newPost);
+    if (creatededPost) {
+      return newPost;
     } else {
       return null;
     }
   },
 
+  async createComment(
+    postId: ObjectId,
+    content: string,
+    userId: ObjectId,
+    userLogin: string,
+    addeAt: Date,
+  ): Promise<CommentsType | null> {
+    const post = await postsRepository.getPostsById(postId);
+    const user = await usersRepository.getUserById(userId);
+    if (!user) throw new Error('User not exists');
+    if (post) {
+      const newComment = {
+        _id: new ObjectId(),
+        content: content,
+        userId: user!.id,
+        userLogin: user!.login,
+        addeAt: new Date(),
+      };
+      const createdComment = await commentsRepository.createComment(newComment);
+      return createdComment;
+    }
+    return null;
+  },
+
   async updatePosts(
-    id: number,
+    id: ObjectId,
     title: string,
     shortDescription: string,
     content: string,
-    bloggerId: number,
+    bloggerId: ObjectId,
   ): Promise<boolean | undefined> {
     return postsRepository.updatePosts(id, title, shortDescription, content, bloggerId);
   },

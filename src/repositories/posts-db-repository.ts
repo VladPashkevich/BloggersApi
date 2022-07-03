@@ -1,6 +1,7 @@
 import { ObjectId } from 'mongodb';
+import { posts } from './database';
 import { bloggersCollection, postsCollection } from './db';
-import { PostsType } from './types';
+import { CommentsType, PostsType } from './types';
 
 interface PostsData {
   posts: PostsType[];
@@ -9,12 +10,20 @@ interface PostsData {
 
 export const postsRepository = {
   async getPosts(pageNumber: number, pageSize: number): Promise<PostsData> {
-    const posts = await postsCollection
-      .find({}, { projection: { _id: 0 } })
+    const postsFromDB = await postsCollection
+      .find({})
       .limit(pageSize)
       .skip((pageNumber - 1) * pageSize)
       .toArray();
     const totalCount = await postsCollection.countDocuments();
+    let posts = postsFromDB.map((p) => ({
+      id: p._id,
+      title: p.title,
+      shortDescription: p.shortDescription,
+      content: p.content,
+      bloggerId: p.bloggerId,
+      bloggerName: p.bloggerName,
+    }));
     return {
       posts: posts,
       totalCount: totalCount,
@@ -22,48 +31,67 @@ export const postsRepository = {
   },
 
   async getPostsByBloggerId(
-    bloggerId: number,
+    bloggerId: ObjectId,
     pageNumber: number,
     pageSize: number,
   ): Promise<PostsData> {
-    const posts = await postsCollection
-      .find({ bloggerId: bloggerId }, { projection: { _id: 0 } })
+    const postsFromDbBlogger = await postsCollection
+      .find({ bloggerId: bloggerId })
       .limit(pageSize)
       .skip((pageNumber - 1) * pageSize)
       .toArray();
     const totalCount = await postsCollection.countDocuments({ bloggerId: bloggerId });
+    let posts = postsFromDbBlogger.map((p) => ({
+      id: p._id,
+      title: p.title,
+      shortDescription: p.shortDescription,
+      content: p.content,
+      bloggerId: p.bloggerId,
+      bloggerName: p.bloggerName,
+    }));
     return {
       posts: posts,
       totalCount: totalCount,
     };
   },
 
-  async getPostsById(id: number): Promise<PostsType | null> {
-    const post = await postsCollection.findOne({ id: id }, { projection: { _id: 0 } });
-    return post;
+  async getPostsById(id: ObjectId): Promise<PostsType | null> {
+    const post = await postsCollection.findOne({ _id: id });
+    if (post) {
+      return {
+        id: post._id,
+        title: post.title,
+        shortDescription: post.shortDescription,
+        content: post.content,
+        bloggerId: post.bloggerId,
+        bloggerName: post.bloggerName,
+      };
+    }
+    return null;
   },
 
-  async deletePostsById(id: number): Promise<boolean> {
+  async deletePostsById(id: ObjectId): Promise<boolean> {
     const result = await postsCollection.deleteOne({ id: id });
     return result.deletedCount === 1;
   },
 
-  async createdPosts(newPost: PostsType): Promise<PostsType | null> {
-    await postsCollection.insertOne({ ...newPost, _id: new ObjectId() });
-    return newPost;
+  async createdPosts(newPost: PostsType): Promise<boolean> {
+    const { id, ...rest } = newPost;
+    const posts = await postsCollection.insertOne({ ...rest, _id: newPost.id });
+    return posts.acknowledged;
   },
 
   async updatePosts(
-    id: number,
+    id: ObjectId,
     title: string,
     shortDescription: string,
     content: string,
-    bloggerId: number,
+    bloggerId: ObjectId,
   ): Promise<boolean | undefined> {
-    const blogger = await bloggersCollection.findOne({ id: bloggerId });
+    const blogger = await bloggersCollection.findOne({ _id: bloggerId });
     if (blogger) {
       const result = await postsCollection.updateOne(
-        { id: id },
+        { _id: id },
         {
           $set: {
             title: title,

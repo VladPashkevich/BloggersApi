@@ -4,5 +4,5 @@ import { bloggersService } from '../domain/bloggers-service';
 export const paramBloggerIdValidator = param('bloggerId')
   .trim()
   .notEmpty()
-  .isInt({ min: 1 })
+  .isString()
   .withMessage('Value should be number');

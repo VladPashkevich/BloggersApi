@@ -9,6 +9,7 @@ import { titleValidator } from '../middlewares/titleValidator';
 import { shortDescriptionValidator } from '../middlewares/shortDescriptionValidator';
 import { contentValidator } from '../middlewares/contentValidator';
 import { paramBloggerIdValidator } from '../middlewares/paramBloggersIdValidator';
+import { ObjectId } from 'mongodb';
 
 export const bloggersRouter = Router({});
 
@@ -21,7 +22,7 @@ bloggersRouter.get('/', async (req: Request, res: Response) => {
 });
 
 bloggersRouter.get('/:bloggerId', paramBloggerIDValidator, async (req: Request, res: Response) => {
-  const blogger = await bloggersService.getBloggersById(+req.params.bloggerId);
+  const blogger = await bloggersService.getBloggersById(new ObjectId(req.params.bloggerId));
   if (blogger) {
     res.send(blogger);
   } else {
@@ -30,14 +31,14 @@ bloggersRouter.get('/:bloggerId', paramBloggerIDValidator, async (req: Request, 
 });
 
 bloggersRouter.get('/:bloggerId/posts', async (req: Request, res: Response) => {
-  const blogger = await bloggersService.getBloggersById(+req.params.bloggerId);
+  const blogger = await bloggersService.getBloggersById(new ObjectId(req.params.bloggerId));
   if (!blogger) {
     return res.send(404);
   }
   const pageNumber = Number(req.query.PageNumber) || 1;
   const pageSize = Number(req.query.PageSize) || 10;
   const allPostsOfBlogger = await bloggersService.getPostsByBloggerId(
-    +req.params.bloggerId,
+    new ObjectId(req.params.bloggerId),
     pageNumber,
     pageSize,
   );
@@ -65,7 +66,7 @@ bloggersRouter.post(
   contentValidator,
   inputValidationMiddleware,
   async (req: Request, res: Response) => {
-    const blogger = await bloggersService.getBloggersById(+req.params.bloggerId);
+    const blogger = await bloggersService.getBloggersById(new ObjectId(req.params.bloggerId));
     if (!blogger) {
       return res.send(404);
     }
@@ -73,7 +74,7 @@ bloggersRouter.post(
       req.body.title,
       req.body.shortDescription,
       req.body.content,
-      +req.params.bloggerId,
+      new ObjectId(req.params.bloggerId),
     );
     if (post) {
       res.status(201).send(post);
@@ -91,12 +92,15 @@ bloggersRouter.put(
   youtubeUrlValidator,
   inputValidationMiddleware,
   async (req: Request, res: Response) => {
-    const blogger = await bloggersService.getBloggersById(+req.params.bloggerId);
+    const blogerId = new ObjectId(req.params.bloggerId);
+    const blogger = await bloggersService.getBloggersById(blogerId);
+
+    console.log(blogger);
     if (!blogger) {
       return res.send(404);
     }
     const updateBlogger = await bloggersService.updateBlogger(
-      +req.params.bloggerId,
+      blogerId,
       req.body.name,
       req.body.youtubeUrl,
     );
@@ -114,7 +118,7 @@ bloggersRouter.delete(
   basicAuth,
   paramBloggerIDValidator,
   async (req: Request, res: Response) => {
-    const isDelete = await bloggersService.deleteBloggerById(+req.params.bloggerId);
+    const isDelete = await bloggersService.deleteBloggerById(new ObjectId(req.params.bloggerId));
     if (isDelete) {
       res.send(204);
     } else {

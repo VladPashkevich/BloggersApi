@@ -1,13 +1,14 @@
 import { body } from 'express-validator';
+import { ObjectId } from 'mongodb';
 import { bloggersService } from '../domain/bloggers-service';
 
 export const bodyBloggerIDValidator = body('bloggerId')
   .trim()
   .notEmpty()
-  .isInt({ min: 1 })
+  .isString()
   .withMessage('Value should be number')
   .custom(async (bloggerId) => {
-    const blogger = await bloggersService.getBloggersById(+bloggerId);
+    const blogger = await bloggersService.getBloggersById(new ObjectId(bloggerId));
     if (!blogger) {
       throw new Error('BloggerId does not exists');
     }

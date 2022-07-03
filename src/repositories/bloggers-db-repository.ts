@@ -1,9 +1,9 @@
 import { ObjectId } from 'mongodb';
 import { bloggersCollection } from './db';
-import { BloggersTypes } from './types';
+import { BloggersType } from './types';
 
 interface BloggersData {
-  bloggers: BloggersTypes[];
+  bloggers: BloggersType[];
   totalCount: number;
 }
 
@@ -22,7 +22,7 @@ export const bloggersRepository = {
       name: { $regex: searchNameTerm },
     });
     let bloggers = bloggersFromDb.map((b) => ({
-      id: b.id,
+      id: b._id,
       name: b.name,
       youtubeUrl: b.youtubeUrl,
     }));
@@ -32,11 +32,11 @@ export const bloggersRepository = {
     };
   },
 
-  async getBloggersById(id: number): Promise<BloggersTypes | null> {
-    const blogger = await bloggersCollection.findOne({ id: id });
+  async getBloggersById(id: ObjectId): Promise<BloggersType | null> {
+    const blogger = await bloggersCollection.findOne({ _id: id });
     if (blogger) {
       return {
-        id: blogger.id,
+        id: blogger._id,
         name: blogger.name,
         youtubeUrl: blogger.youtubeUrl,
       };
@@ -44,19 +44,20 @@ export const bloggersRepository = {
     return null;
   },
 
-  async deleteBloggerById(id: number): Promise<boolean> {
-    const result = await bloggersCollection.deleteOne({ id: id });
+  async deleteBloggerById(id: ObjectId): Promise<boolean> {
+    const result = await bloggersCollection.deleteOne({ _id: id });
     return result.deletedCount === 1;
   },
 
-  async createdBlogger(newBlogger: BloggersTypes): Promise<BloggersTypes> {
-    await bloggersCollection.insertOne({ ...newBlogger, _id: new ObjectId() });
-    return newBlogger;
+  async createdBlogger(newBlogger: BloggersType): Promise<boolean> {
+    const { id, ...rest } = newBlogger;
+    const blogger = await bloggersCollection.insertOne({ ...rest, _id: newBlogger.id });
+    return blogger.acknowledged;
   },
 
-  async updateBlogger(id: number, name: string, youtubeUrl: string): Promise<boolean> {
+  async updateBlogger(id: ObjectId, name: string, youtubeUrl: string): Promise<boolean> {
     const result = await bloggersCollection.updateOne(
-      { id: id },
+      { _id: id },
       { $set: { name: name, youtubeUrl: youtubeUrl } },
     );
     return result.matchedCount === 1;
