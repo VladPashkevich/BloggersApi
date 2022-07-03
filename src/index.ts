@@ -7,8 +7,6 @@ import { runDb } from './repositories/db';
 import { usersRouter } from './routers/users-router';
 import { commentsRouter } from './routers/comments-router';
 import { authRouter } from './routers/auth-router';
-import * as dotenv from 'dotenv';
-dotenv.config({ path: __dirname + '/.env' });
 
 const app = express();
 
