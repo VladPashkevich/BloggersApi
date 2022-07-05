@@ -33,14 +33,10 @@ export const commentsRepository = {
   },
 
   async createComment(newComment: CommentsType): Promise<boolean> {
-    const { id, userId, userLogin, content, addeAt, ...rest } = newComment;
+    const { id, ...rest } = newComment;
     const comment = await commentsCollection.insertOne({
       ...rest,
       _id: newComment.id,
-      userId: newComment.userId,
-      userLogin: newComment.userLogin,
-      content: newComment.content,
-      addeAt: newComment.addeAt,
     });
     return comment.acknowledged;
   },
