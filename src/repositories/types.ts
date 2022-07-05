@@ -67,7 +67,7 @@ export type CommentsType = {
   content: string;
   userId: ObjectId;
   userLogin: string;
-  addeAt: Date;
+  addedAt: Date;
   postId: ObjectId;
 };
 export type CommentType = {
@@ -75,7 +75,7 @@ export type CommentType = {
   content: string;
   userId: ObjectId;
   userLogin: string;
-  addeAt: Date;
+  addedAt: Date;
 };
 
 export type CommentsDBType = {

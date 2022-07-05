@@ -17,7 +17,7 @@ export const commentsService = {
         userId: userId,
         userLogin: userLogin,
         content: content,
-        addeAt: new Date(),
+        addedAt: new Date(),
         postId: post.id,
       };
       const createdComment = await commentsRepository.createComment(comment);
@@ -27,7 +27,7 @@ export const commentsService = {
           userId: comment.userId,
           userLogin: comment.userLogin,
           content: comment.content,
-          addeAt: comment.addeAt,
+          addedAt: comment.addedAt,
         };
       } else {
         return null;

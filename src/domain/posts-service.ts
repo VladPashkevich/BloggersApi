@@ -92,7 +92,7 @@ export const postsService = {
         content: content,
         userId: user!.id,
         userLogin: user!.login,
-        addeAt: new Date(),
+        addedAt: new Date(),
         postId: post.id,
       };
       const createdComment = await commentsRepository.createComment(comment);

@@ -24,7 +24,7 @@ export const commentsRepository = {
       userId: c.userId,
       userLogin: c.userLogin,
       content: c.content,
-      addeAt: c.addeAt,
+      addedAt: c.addedAt,
     }));
     return {
       comments: comments,
@@ -54,7 +54,7 @@ export const commentsRepository = {
         userId: comment.userId,
         userLogin: comment.userLogin,
         content: comment.content,
-        addeAt: comment.addeAt,
+        addedAt: comment.addedAt,
       };
     }
     return null;
