@@ -108,19 +108,25 @@ postsRouter.put(
   },
 );
 
-postsRouter.get('/:postId', paramPostIDValidator, async (req: Request, res: Response) => {
-  const post = await postsService.getPostsById(new ObjectId(req.params.postId));
-  if (post) {
-    res.status(200).send(post);
-  } else {
-    res.send(404);
-  }
-});
+postsRouter.get(
+  '/:postId',
+  paramPostIDValidator,
+  inputValidationMiddleware,
+  async (req: Request, res: Response) => {
+    const post = await postsService.getPostsById(new ObjectId(req.params.postId));
+    if (post) {
+      res.status(200).send(post);
+    } else {
+      res.send(404);
+    }
+  },
+);
 
 postsRouter.delete(
   '/:postId',
   superAdminAuthMiddleware,
   paramPostIDValidator,
+  inputValidationMiddleware,
   async (req: Request, res: Response) => {
     const isDelete = await postsService.deletePostsById(new ObjectId(req.params.postId));
 

@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { ObjectId } from 'mongodb';
 import { commentsService } from '../domain/comments-service';
 import { postIdValidator } from '../middlewares/commentExistValidator';
+import { inputValidationMiddleware } from '../middlewares/inputValidationMiddleware';
 import { usersAuthMiddleware } from '../middlewares/users-auth-middleware';
 
 export const commentsRouter = Router({});
@@ -10,6 +11,7 @@ commentsRouter.put(
   '/:commentId',
   usersAuthMiddleware,
   postIdValidator,
+  inputValidationMiddleware,
   async (req: Request, res: Response) => {
     const newComment = await commentsService.createComment(
       req.body.comment,

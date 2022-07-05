@@ -21,14 +21,19 @@ bloggersRouter.get('/', async (req: Request, res: Response) => {
   res.send(allBloggers);
 });
 
-bloggersRouter.get('/:bloggerId', paramBloggerIDValidator, async (req: Request, res: Response) => {
-  const blogger = await bloggersService.getBloggersById(new ObjectId(req.params.bloggerId));
-  if (blogger) {
-    res.send(blogger);
-  } else {
-    res.send(404);
-  }
-});
+bloggersRouter.get(
+  '/:bloggerId',
+  paramBloggerIDValidator,
+  inputValidationMiddleware,
+  async (req: Request, res: Response) => {
+    const blogger = await bloggersService.getBloggersById(new ObjectId(req.params.bloggerId));
+    if (blogger) {
+      res.send(blogger);
+    } else {
+      res.send(404);
+    }
+  },
+);
 
 bloggersRouter.get('/:bloggerId/posts', async (req: Request, res: Response) => {
   const blogger = await bloggersService.getBloggersById(new ObjectId(req.params.bloggerId));
