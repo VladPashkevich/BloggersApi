@@ -56,6 +56,7 @@ postsRouter.post(
 postsRouter.post(
   '/:postId/comments',
   usersAuthMiddleware,
+  mongoIdValidator('postId'),
   contentCommentValidator,
   inputValidationMiddleware,
   async (req: Request, res: Response) => {
