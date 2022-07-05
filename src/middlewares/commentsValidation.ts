@@ -5,7 +5,6 @@ const commentsMinLength = 20;
 
 export const contentCommentValidator = body('content')
   .trim()
-
   .notEmpty()
   .withMessage('Missing a required parametr')
   .isLength({ min: commentsMinLength, max: commentsMaxLength })

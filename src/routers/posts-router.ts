@@ -22,13 +22,17 @@ postsRouter.get('/', async (req: Request, res: Response) => {
   res.status(200).send(allPosts);
 });
 
-postsRouter.get('/:postId/comments', async (req: Request, res: Response) => {
-  const pageNumber = Number(req.query.PageNumber) || 1;
-  const pageSize = Number(req.query.PageSize) || 10;
-  const postId = new ObjectId(req.params.postId);
-  const allPosts = await postsService.getCommentsByPostId(postId, pageNumber, pageSize);
-  res.status(200).send(allPosts);
-});
+postsRouter.get(
+  '/:postId/comments',
+  mongoIdValidator('postId'),
+  async (req: Request, res: Response) => {
+    const pageNumber = Number(req.query.PageNumber) || 1;
+    const pageSize = Number(req.query.PageSize) || 10;
+    const postId = new ObjectId(req.params.postId);
+    const allPosts = await postsService.getCommentsByPostId(postId, pageNumber, pageSize);
+    res.status(200).send(allPosts);
+  },
+);
 
 postsRouter.post(
   '/',
