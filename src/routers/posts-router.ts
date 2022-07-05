@@ -1,7 +1,7 @@
 import { Request, Response, Router } from 'express';
 import { bodyBloggerIDValidator } from '../middlewares/bloggerIdValidator';
 import { contentValidator } from '../middlewares/contentValidator';
-import { paramPostIDValidator } from '../middlewares/idValidator';
+import { mongoIdValidator } from '../middlewares/idValidator';
 import { inputValidationMiddleware } from '../middlewares/inputValidationMiddleware';
 import { shortDescriptionValidator } from '../middlewares/shortDescriptionValidator';
 import { titleValidator } from '../middlewares/titleValidator';
@@ -81,7 +81,7 @@ postsRouter.post(
 postsRouter.put(
   '/:postId',
   superAdminAuthMiddleware,
-  paramPostIDValidator,
+  mongoIdValidator('postId'),
   titleValidator,
   shortDescriptionValidator,
   contentValidator,
@@ -110,7 +110,7 @@ postsRouter.put(
 
 postsRouter.get(
   '/:postId',
-  paramPostIDValidator,
+  mongoIdValidator('postId'),
   inputValidationMiddleware,
   async (req: Request, res: Response) => {
     const post = await postsService.getPostsById(new ObjectId(req.params.postId));
@@ -125,7 +125,7 @@ postsRouter.get(
 postsRouter.delete(
   '/:postId',
   superAdminAuthMiddleware,
-  paramPostIDValidator,
+  mongoIdValidator('postId'),
   inputValidationMiddleware,
   async (req: Request, res: Response) => {
     const isDelete = await postsService.deletePostsById(new ObjectId(req.params.postId));
