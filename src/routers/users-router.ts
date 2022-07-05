@@ -1,11 +1,11 @@
 import { usersService } from '../domain/users-service';
 import { Request, Response, Router } from 'express';
 import { ObjectId } from 'mongodb';
-import basicAuth from '../middlewares/basicAuth';
+import { superAdminAuthMiddleware } from '../middlewares/basicAutht';
 
 export const usersRouter = Router({});
 
-usersRouter.post('/', basicAuth, async (req: Request, res: Response) => {
+usersRouter.post('/', superAdminAuthMiddleware, async (req: Request, res: Response) => {
   const login: string = req.body.login;
   const password: string = req.body.password;
 
@@ -20,7 +20,7 @@ usersRouter.get('/', async (req: Request, res: Response) => {
   res.status(200).send(allUsers);
 });
 
-usersRouter.delete('/:userId', basicAuth, async (req: Request, res: Response) => {
+usersRouter.delete('/:userId', superAdminAuthMiddleware, async (req: Request, res: Response) => {
   const userIsDelete = await usersService.deleteUserById(new ObjectId(req.params.userId));
   if (userIsDelete) {
     res.sendStatus(204);

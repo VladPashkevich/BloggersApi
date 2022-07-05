@@ -6,7 +6,7 @@ import { inputValidationMiddleware } from '../middlewares/inputValidationMiddlew
 import { shortDescriptionValidator } from '../middlewares/shortDescriptionValidator';
 import { titleValidator } from '../middlewares/titleValidator';
 import { postsService } from '../domain/posts-service';
-import basicAuth from '../middlewares/basicAuth';
+import { superAdminAuthMiddleware } from '../middlewares/basicAutht';
 import { commentsService } from '../domain/comments-service';
 import { ObjectId } from 'mongodb';
 import { commentsRepository } from '../repositories/comments-db-repository';
@@ -31,7 +31,7 @@ postsRouter.get('/:postId/comments', async (req: Request, res: Response) => {
 
 postsRouter.post(
   '/',
-  basicAuth,
+  superAdminAuthMiddleware,
   titleValidator,
   shortDescriptionValidator,
   contentValidator,
@@ -80,7 +80,7 @@ postsRouter.post(
 
 postsRouter.put(
   '/:postId',
-  basicAuth,
+  superAdminAuthMiddleware,
   paramPostIDValidator,
   titleValidator,
   shortDescriptionValidator,
@@ -119,7 +119,7 @@ postsRouter.get('/:postId', paramPostIDValidator, async (req: Request, res: Resp
 
 postsRouter.delete(
   '/:postId',
-  basicAuth,
+  superAdminAuthMiddleware,
   paramPostIDValidator,
   async (req: Request, res: Response) => {
     const isDelete = await postsService.deletePostsById(new ObjectId(req.params.postId));

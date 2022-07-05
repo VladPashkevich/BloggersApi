@@ -4,7 +4,7 @@ import { inputValidationMiddleware } from '../middlewares/inputValidationMiddlew
 import { nameValidator } from '../middlewares/nameValidator';
 import { youtubeUrlValidator } from '../middlewares/youtubeUrlValidator';
 import { bloggersService } from '../domain/bloggers-service';
-import basicAuth from '../middlewares/basicAuth';
+import { superAdminAuthMiddleware } from '../middlewares/basicAutht';
 import { titleValidator } from '../middlewares/titleValidator';
 import { shortDescriptionValidator } from '../middlewares/shortDescriptionValidator';
 import { contentValidator } from '../middlewares/contentValidator';
@@ -47,7 +47,7 @@ bloggersRouter.get('/:bloggerId/posts', async (req: Request, res: Response) => {
 
 bloggersRouter.post(
   '/',
-  basicAuth,
+  superAdminAuthMiddleware,
   nameValidator,
   youtubeUrlValidator,
   inputValidationMiddleware,
@@ -59,7 +59,7 @@ bloggersRouter.post(
 
 bloggersRouter.post(
   '/:bloggerId/posts',
-  basicAuth,
+  superAdminAuthMiddleware,
   titleValidator,
   shortDescriptionValidator,
   paramBloggerIdValidator,
@@ -86,7 +86,7 @@ bloggersRouter.post(
 
 bloggersRouter.put(
   '/:bloggerId',
-  basicAuth,
+  superAdminAuthMiddleware,
   paramBloggerIDValidator,
   nameValidator,
   youtubeUrlValidator,
@@ -115,7 +115,7 @@ bloggersRouter.put(
 
 bloggersRouter.delete(
   '/:bloggerId',
-  basicAuth,
+  superAdminAuthMiddleware,
   paramBloggerIDValidator,
   async (req: Request, res: Response) => {
     const isDelete = await bloggersService.deleteBloggerById(new ObjectId(req.params.bloggerId));

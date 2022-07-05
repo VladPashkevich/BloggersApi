@@ -12,7 +12,6 @@ export const usersAuthMiddleware = async (req: Request, res: Response, next: Nex
   if (userId) {
     req.user = await usersService.getUserByIdForAuth(userId);
     next();
-    return;
   } else {
     res.send(401);
   }
