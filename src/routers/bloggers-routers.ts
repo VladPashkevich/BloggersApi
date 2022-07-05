@@ -35,20 +35,24 @@ bloggersRouter.get(
   },
 );
 
-bloggersRouter.get('/:bloggerId/posts', async (req: Request, res: Response) => {
-  const blogger = await bloggersService.getBloggersById(new ObjectId(req.params.bloggerId));
-  if (!blogger) {
-    return res.send(404);
-  }
-  const pageNumber = Number(req.query.PageNumber) || 1;
-  const pageSize = Number(req.query.PageSize) || 10;
-  const allPostsOfBlogger = await bloggersService.getPostsByBloggerId(
-    new ObjectId(req.params.bloggerId),
-    pageNumber,
-    pageSize,
-  );
-  res.status(200).send(allPostsOfBlogger);
-});
+bloggersRouter.get(
+  '/:bloggerId/posts',
+  mongoIdValidator('bloggerId'),
+  async (req: Request, res: Response) => {
+    const blogger = await bloggersService.getBloggersById(new ObjectId(req.params.bloggerId));
+    if (!blogger) {
+      return res.send(404);
+    }
+    const pageNumber = Number(req.query.PageNumber) || 1;
+    const pageSize = Number(req.query.PageSize) || 10;
+    const allPostsOfBlogger = await bloggersService.getPostsByBloggerId(
+      new ObjectId(req.params.bloggerId),
+      pageNumber,
+      pageSize,
+    );
+    res.status(200).send(allPostsOfBlogger);
+  },
+);
 
 bloggersRouter.post(
   '/',
