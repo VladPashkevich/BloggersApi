@@ -34,12 +34,12 @@ export const usersRepository = {
     return user.acknowledged;
   },
   async deleteUserById(id: ObjectId): Promise<boolean> {
-    let result = await usersCollection.deleteOne(id);
+    let result = await usersCollection.deleteOne({ _id: id });
     return result.deletedCount === 1;
   },
 
   async getUserById(id: ObjectId): Promise<UsersTypeFromDB | null> {
-    const user = await usersCollection.findOne({ id: id });
+    const user = await usersCollection.findOne({ _id: id });
     if (user) {
       return {
         id: user._id,

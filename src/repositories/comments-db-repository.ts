@@ -46,7 +46,7 @@ export const commentsRepository = {
   },
 
   async updateCommentById(id: ObjectId, content: string): Promise<boolean> {
-    const result = await commentsCollection.updateOne({ id: id }, { $set: { content: content } });
+    const result = await commentsCollection.updateOne({ _id: id }, { $set: { content: content } });
     return result.matchedCount === 1;
   },
 
@@ -65,7 +65,7 @@ export const commentsRepository = {
   },
 
   async deleteCommentById(id: ObjectId): Promise<boolean> {
-    let result = await commentsCollection.deleteOne(id);
+    let result = await commentsCollection.deleteOne({ _id: id });
     return result.deletedCount === 1;
   },
 };
