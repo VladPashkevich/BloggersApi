@@ -117,6 +117,7 @@ bloggersRouter.delete(
   '/:bloggerId',
   superAdminAuthMiddleware,
   paramBloggerIDValidator,
+  inputValidationMiddleware,
   async (req: Request, res: Response) => {
     const isDelete = await bloggersService.deleteBloggerById(new ObjectId(req.params.bloggerId));
     if (isDelete) {
