@@ -2,6 +2,8 @@ import { usersService } from '../domain/users-service';
 import { Request, Response, Router } from 'express';
 import { ObjectId } from 'mongodb';
 import { superAdminAuthMiddleware } from '../middlewares/basicAutht';
+import { inputValidationMiddleware } from '../middlewares/inputValidationMiddleware';
+import { paramUserIDValidator } from '../middlewares/inputUserIDValidator';
 
 export const usersRouter = Router({});
 
@@ -20,11 +22,17 @@ usersRouter.get('/', async (req: Request, res: Response) => {
   res.status(200).send(allUsers);
 });
 
-usersRouter.delete('/:userId', superAdminAuthMiddleware, async (req: Request, res: Response) => {
-  const userIsDelete = await usersService.deleteUserById(new ObjectId(req.params.userId));
-  if (userIsDelete) {
-    res.sendStatus(204);
-  } else {
-    res.sendStatus(404);
-  }
-});
+usersRouter.delete(
+  '/:userId',
+  superAdminAuthMiddleware,
+  paramUserIDValidator,
+  inputValidationMiddleware,
+  async (req: Request, res: Response) => {
+    const userIsDelete = await usersService.deleteUserById(new ObjectId(req.params.userId));
+    if (userIsDelete) {
+      res.sendStatus(204);
+    } else {
+      res.sendStatus(404);
+    }
+  },
+);
