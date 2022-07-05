@@ -34,11 +34,17 @@ commentsRouter.get('/:commentId', async (req: Request, res: Response) => {
   }
 });
 
-commentsRouter.delete('/:commentId', async (req: Request, res: Response) => {
-  const isDelete = await commentsService.deleteCommentById(new ObjectId(req.params.commentId));
-  if (isDelete) {
-    res.sendStatus(204);
-  } else {
-    res.send(404);
-  }
-});
+commentsRouter.delete(
+  '/:commentId',
+  usersAuthMiddleware,
+  userIdValidator,
+  inputValidationMiddleware,
+  async (req: Request, res: Response) => {
+    const isDelete = await commentsService.deleteCommentById(new ObjectId(req.params.commentId));
+    if (isDelete) {
+      res.sendStatus(204);
+    } else {
+      res.send(404);
+    }
+  },
+);

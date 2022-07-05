@@ -1,6 +1,6 @@
 import { body } from 'express-validator';
 
-const passwordMaxLength = 30;
+const passwordMaxLength = 20;
 const passwordMinLength = 6;
 
 export const userPasswordValidator = body('password')
