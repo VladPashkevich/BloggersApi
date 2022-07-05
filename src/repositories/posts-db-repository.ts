@@ -71,7 +71,7 @@ export const postsRepository = {
   },
 
   async deletePostsById(id: ObjectId): Promise<boolean> {
-    const result = await postsCollection.deleteOne({ id: id });
+    const result = await postsCollection.deleteOne({ _id: id });
     return result.deletedCount === 1;
   },
 
