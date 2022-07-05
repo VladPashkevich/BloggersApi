@@ -3,10 +3,7 @@ import { ObjectId } from 'mongodb';
 import { bloggersService } from '../domain/bloggers-service';
 
 export const bodyBloggerIDValidator = body('bloggerId')
-  .trim()
-  .notEmpty()
-  .isString()
-  .withMessage('Value should be number')
+  .isMongoId()
   .custom(async (bloggerId) => {
     const blogger = await bloggersService.getBloggersById(new ObjectId(bloggerId));
     if (!blogger) {

@@ -3,13 +3,7 @@ import { ObjectId } from 'mongodb';
 import { commentsRepository } from '../repositories/comments-db-repository';
 import { Request, Response, NextFunction } from 'express';
 
-export const paramPostIDValidator = param('postId')
-  .exists()
-  .withMessage('Value should be exists')
-  .notEmpty()
-  .withMessage('Value should be not empty')
-  .isString()
-  .withMessage('Value should be string');
+export const paramPostIDValidator = param('postId').isMongoId();
 
 export const postIdValidator = async (req: Request, res: Response, next: NextFunction) => {
   const postId = req.params.postId;
