@@ -11,7 +11,7 @@ let db = client.db('youtube');
 export const postsCollection = db.collection<Omit<PostsType, 'id'>>('posts');
 export const bloggersCollection = db.collection<Omit<BloggersType, 'id'>>('bloggers');
 export const usersCollection = db.collection<Omit<UsersType, 'id'>>('users');
-export const commentsCollection = db.collection<CommentsType>('comments');
+export const commentsCollection = db.collection<Omit<CommentsType, 'id'>>('comments');
 
 export async function runDb() {
   try {

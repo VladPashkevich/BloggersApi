@@ -1,25 +1,39 @@
 import { ObjectId } from 'mongodb';
 import { commentsRepository } from '../repositories/comments-db-repository';
-import { CommentsType } from '../repositories/types';
+import { postsRepository } from '../repositories/posts-db-repository';
+import { CommentsType, CommentType } from '../repositories/types';
 
 export const commentsService = {
-  async getAllComments(): Promise<CommentsType[]> {
-    return commentsRepository.getAllComments();
-  },
   async createComment(
     content: string,
     userId: ObjectId,
     userLogin: string,
     postId: ObjectId,
-  ): Promise<CommentsType> {
-    const comment: CommentsType = {
-      _id: postId,
-      userId: userId,
-      userLogin: userLogin,
-      content: content,
-      addeAt: new Date(),
-    };
-    return commentsRepository.createComment(comment);
+  ): Promise<Omit<CommentsType, 'postId'> | null> {
+    const post = await postsRepository.getPostsById(postId);
+    if (post) {
+      const comment: CommentsType = {
+        id: new ObjectId(),
+        userId: userId,
+        userLogin: userLogin,
+        content: content,
+        addeAt: new Date(),
+        postId: post.id,
+      };
+      const createdComment = await commentsRepository.createComment(comment);
+      if (createdComment) {
+        return {
+          id: comment.id,
+          userId: comment.userId,
+          userLogin: comment.userLogin,
+          content: comment.content,
+          addeAt: comment.addeAt,
+        };
+      } else {
+        return null;
+      }
+    }
+    return null;
   },
 
   async deleteCommentById(id: ObjectId): Promise<boolean> {
@@ -28,5 +42,8 @@ export const commentsService = {
 
   async updateComment(content: string, id: ObjectId): Promise<boolean> {
     return commentsRepository.updateCommentById(id, content);
+  },
+  async getCommentById(id: ObjectId): Promise<CommentType | null> {
+    return commentsRepository.getCommentById(id);
   },
 };

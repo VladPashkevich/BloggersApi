@@ -21,8 +21,13 @@ commentsRouter.put(
   },
 );
 
-commentsRouter.get('/', async (req: Request, res: Response) => {
-  return commentsService.getAllComments();
+commentsRouter.get('/:commentId', async (req: Request, res: Response) => {
+  const comment = await commentsService.getCommentById(new ObjectId(req.params.commentId));
+  if (comment) {
+    res.status(200).send(comment);
+  } else {
+    res.send(404);
+  }
 });
 
 commentsRouter.delete('/:commentId', async (req: Request, res: Response) => {

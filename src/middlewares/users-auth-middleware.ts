@@ -7,8 +7,7 @@ export const usersAuthMiddleware = async (req: Request, res: Response, next: Nex
     res.send(401);
     return;
   }
-  const token = req.headers.authorization.split('')[1];
-
+  const token = req.headers.authorization.split(' ')[1];
   const userId = await jwtService.getUserIdByToken(token);
   if (userId) {
     req.user = await usersService.getUserByIdForAuth(userId);

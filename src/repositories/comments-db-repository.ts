@@ -1,38 +1,48 @@
 import { ObjectId } from 'mongodb';
 import { commentsCollection } from './db';
-import { CommentsType } from './types';
-import { usersRepository } from './users-db-repository';
+import { CommentsType, CommentType } from './types';
 
 interface CommentsData {
-  comments: CommentsType[];
+  comments: CommentType[];
   totalCount: number;
 }
 
 export const commentsRepository = {
-  async getAllComments(): Promise<CommentsType[]> {
-    return commentsCollection.find().sort('createAt', -1).toArray();
-  },
-
   async getCommentsByPostId(
     postId: ObjectId,
     pageNumber: number,
     pageSize: number,
   ): Promise<CommentsData> {
-    const comments = await commentsCollection
+    const commentsFromDb = await commentsCollection
       .find({ postId: postId })
       .limit(pageSize)
       .skip((pageNumber - 1) * pageSize)
       .toArray();
     const totalCount = await commentsCollection.countDocuments({ postId: postId });
+    let comments = commentsFromDb.map((c) => ({
+      id: c._id,
+      userId: c.userId,
+      userLogin: c.userLogin,
+      content: c.content,
+      addeAt: c.addeAt,
+    }));
     return {
       comments: comments,
       totalCount: totalCount,
     };
   },
 
-  async createComment(comment: CommentsType): Promise<CommentsType> {
-    await commentsCollection.insertOne(comment);
-    return comment;
+  async createComment(newComment: CommentsType): Promise<boolean> {
+    const { id, userId, userLogin, content, addeAt, ...rest } = newComment;
+    const comment = await commentsCollection.insertOne({
+      ...rest,
+      _id: newComment.id,
+      userId: newComment.userId,
+      userLogin: newComment.userLogin,
+      content: newComment.content,
+      addeAt: newComment.addeAt,
+    });
+    return comment.acknowledged;
   },
 
   async updateCommentById(id: ObjectId, content: string): Promise<boolean> {
@@ -40,9 +50,18 @@ export const commentsRepository = {
     return result.matchedCount === 1;
   },
 
-  async getCommentById(id: ObjectId): Promise<CommentsType | null> {
+  async getCommentById(id: ObjectId): Promise<CommentType | null> {
     const comment = await commentsCollection.findOne({ _id: id });
-    return comment;
+    if (comment) {
+      return {
+        id: comment._id,
+        userId: comment.userId,
+        userLogin: comment.userLogin,
+        content: comment.content,
+        addeAt: comment.addeAt,
+      };
+    }
+    return null;
   },
 
   async deleteCommentById(id: ObjectId): Promise<boolean> {

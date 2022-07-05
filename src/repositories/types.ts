@@ -62,17 +62,26 @@ export type UsersDBType = {
   items: UsersTypeFromDB[];
 };
 
-export type CommentsType = WithId<{
+export type CommentsType = {
+  id: ObjectId;
   content: string;
   userId: ObjectId;
   userLogin: string;
   addeAt: Date;
-}>;
+  postId: ObjectId;
+};
+export type CommentType = {
+  id: ObjectId;
+  content: string;
+  userId: ObjectId;
+  userLogin: string;
+  addeAt: Date;
+};
 
 export type CommentsDBType = {
   pagesCount: number;
   page: number;
   pageSize: number;
   totalCount: number;
-  items: CommentsType[];
+  items: CommentType[];
 };

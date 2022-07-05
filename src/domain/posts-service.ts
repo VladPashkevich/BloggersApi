@@ -2,7 +2,13 @@ import { ObjectId } from 'mongodb';
 import { bloggersRepository } from '../repositories/bloggers-db-repository';
 import { commentsRepository } from '../repositories/comments-db-repository';
 import { postsRepository } from '../repositories/posts-db-repository';
-import { CommentsDBType, CommentsType, PostsDBType, PostsType } from '../repositories/types';
+import {
+  CommentsDBType,
+  CommentsType,
+  CommentType,
+  PostsDBType,
+  PostsType,
+} from '../repositories/types';
 import { usersRepository } from '../repositories/users-db-repository';
 
 export const postsService = {
@@ -76,21 +82,23 @@ export const postsService = {
     content: string,
     userId: ObjectId,
     userLogin: string,
-    addeAt: Date,
-  ): Promise<CommentsType | null> {
+  ): Promise<CommentType | null> {
     const post = await postsRepository.getPostsById(postId);
     const user = await usersRepository.getUserById(userId);
     if (!user) throw new Error('User not exists');
     if (post) {
-      const newComment = {
-        _id: new ObjectId(),
+      const comment = {
+        id: new ObjectId(),
         content: content,
         userId: user!.id,
         userLogin: user!.login,
         addeAt: new Date(),
+        postId: post.id,
       };
-      const createdComment = await commentsRepository.createComment(newComment);
-      return createdComment;
+      const createdComment = await commentsRepository.createComment(comment);
+      if (createdComment) {
+        return comment;
+      }
     }
     return null;
   },

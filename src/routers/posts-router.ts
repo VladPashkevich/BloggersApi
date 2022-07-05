@@ -62,10 +62,11 @@ postsRouter.post(
     const post = await postsService.getPostsById(postId);
     if (!post) {
       res.send(404);
+      return;
     }
     const comment = await commentsService.createComment(
       req.body.content,
-      req.user!.id,
+      req.user!._id,
       req.user!.login,
       postId,
     );
