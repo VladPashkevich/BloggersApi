@@ -3,7 +3,7 @@ import { Request, Response, Router } from 'express';
 import { ObjectId } from 'mongodb';
 import { superAdminAuthMiddleware } from '../middlewares/basicAutht';
 import { inputValidationMiddleware } from '../middlewares/inputValidationMiddleware';
-import { paramUserIDValidator } from '../middlewares/inputUserIDValidator';
+import { mongoIdValidator } from '../middlewares/idValidator';
 
 export const usersRouter = Router({});
 
@@ -25,7 +25,7 @@ usersRouter.get('/', async (req: Request, res: Response) => {
 usersRouter.delete(
   '/:userId',
   superAdminAuthMiddleware,
-  paramUserIDValidator,
+  mongoIdValidator('userId'),
   inputValidationMiddleware,
   async (req: Request, res: Response) => {
     const userIsDelete = await usersService.deleteUserById(new ObjectId(req.params.userId));

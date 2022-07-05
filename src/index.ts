@@ -17,7 +17,7 @@ app.use('/bloggers', bloggersRouter);
 app.use('/posts', postsRouter);
 app.use('/users', usersRouter);
 app.use('/comments', commentsRouter);
-app.use('/', authRouter);
+app.use('/auth', authRouter);
 
 const port = process.env.PORT || 5000;
 
