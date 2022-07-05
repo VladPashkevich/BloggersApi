@@ -3,7 +3,7 @@ import { body } from 'express-validator';
 const commentsMaxLength = 300;
 const commentsMinLength = 20;
 
-export const contentValidator = body('login')
+export const contentCommentValidator = body('content')
   .trim()
 
   .notEmpty()

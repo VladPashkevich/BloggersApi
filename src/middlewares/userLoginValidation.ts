@@ -3,7 +3,7 @@ import { body } from 'express-validator';
 const loginMaxLength = 10;
 const loginMinLength = 3;
 
-export const contentValidator = body('login')
+export const userLoginValidator = body('login')
   .trim()
 
   .notEmpty()

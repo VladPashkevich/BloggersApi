@@ -11,6 +11,7 @@ import { commentsService } from '../domain/comments-service';
 import { ObjectId } from 'mongodb';
 import { commentsRepository } from '../repositories/comments-db-repository';
 import { usersAuthMiddleware } from '../middlewares/users-auth-middleware';
+import { contentCommentValidator } from '../middlewares/commentsValidation';
 
 export const postsRouter = Router({});
 
@@ -55,7 +56,7 @@ postsRouter.post(
 postsRouter.post(
   '/:postId/comments',
   usersAuthMiddleware,
-  contentValidator,
+  contentCommentValidator,
   inputValidationMiddleware,
   async (req: Request, res: Response) => {
     const postId = new ObjectId(req.params.postId);

@@ -1,14 +1,22 @@
-import { param } from 'express-validator';
-import { ObjectId } from 'mongodb';
-import { commentsRepository } from '../repositories/comments-db-repository';
 import { Request, Response, NextFunction } from 'express';
+import { ObjectId } from 'mongodb';
+import { commentsCollection } from '../repositories/db';
 
-export const paramPostIDValidator = param('postId').isMongoId();
-
-export const postIdValidator = async (req: Request, res: Response, next: NextFunction) => {
-  const postId = req.params.postId;
-  const comment = await commentsRepository.getCommentById(new ObjectId(postId));
+export const userIdValidator = async (req: Request, res: Response, next: NextFunction) => {
+  const userId = req.user?._id;
+  const id = new ObjectId(req.params.commentId);
+  console.log(id);
+  if (!userId) {
+    res.sendStatus(401);
+    return;
+  }
+  const comment = await commentsCollection.findOne({ _id: id });
+  console.log(comment);
   if (!comment) {
+    res.sendStatus(404);
+    return;
+  }
+  if (comment.userId.toString() !== userId.toString()) {
     res.sendStatus(403);
   } else {
     next();

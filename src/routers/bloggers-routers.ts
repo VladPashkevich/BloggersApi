@@ -1,5 +1,5 @@
 import { Request, Response, Router } from 'express';
-import { mongoIdValidator, paramBloggerIDValidator } from '../middlewares/idValidator';
+import { mongoIdValidator } from '../middlewares/idValidator';
 import { inputValidationMiddleware } from '../middlewares/inputValidationMiddleware';
 import { nameValidator } from '../middlewares/nameValidator';
 import { youtubeUrlValidator } from '../middlewares/youtubeUrlValidator';

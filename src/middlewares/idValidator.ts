@@ -14,7 +14,3 @@ export const mongoIdValidator =
       res.send(404);
     }
   };
-
-export const paramBloggerIDValidator = param('bloggerId').isMongoId();
-
-export const paramPostIDValidator = param('postId').isMongoId();

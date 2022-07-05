@@ -4,16 +4,25 @@ import { ObjectId } from 'mongodb';
 import { superAdminAuthMiddleware } from '../middlewares/basicAutht';
 import { inputValidationMiddleware } from '../middlewares/inputValidationMiddleware';
 import { mongoIdValidator } from '../middlewares/idValidator';
+import { userPasswordValidator } from '../middlewares/userPasswordValidation';
+import { userLoginValidator } from '../middlewares/userLoginValidation';
 
 export const usersRouter = Router({});
 
-usersRouter.post('/', superAdminAuthMiddleware, async (req: Request, res: Response) => {
-  const login: string = req.body.login;
-  const password: string = req.body.password;
+usersRouter.post(
+  '/',
+  superAdminAuthMiddleware,
+  userPasswordValidator,
+  userLoginValidator,
+  inputValidationMiddleware,
+  async (req: Request, res: Response) => {
+    const login: string = req.body.login;
+    const password: string = req.body.password;
 
-  const newUser = await usersService.createdNewUser(login, password);
-  res.status(201).send(newUser);
-});
+    const newUser = await usersService.createdNewUser(login, password);
+    res.status(201).send(newUser);
+  },
+);
 
 usersRouter.get('/', async (req: Request, res: Response) => {
   const pageNumber = Number(req.query.PageNumber) || 1;
