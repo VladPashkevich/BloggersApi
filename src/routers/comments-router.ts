@@ -14,14 +14,11 @@ commentsRouter.put(
   usersAuthMiddleware,
   mongoIdValidator('commentId'),
   userIdValidator,
-
   contentCommentValidator,
   inputValidationMiddleware,
   async (req: Request, res: Response) => {
-    const newComment = await commentsService.createComment(
-      req.body.comment,
-      req.user!.id,
-      req.user!.login,
+    const newComment = await commentsService.updateComment(
+      req.body.content,
       new ObjectId(req.params.commentId),
     );
     res.status(204).send(newComment);
