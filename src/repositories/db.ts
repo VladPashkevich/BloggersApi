@@ -1,6 +1,13 @@
 import { MongoClient } from 'mongodb';
 import { settings } from '../settings';
-import { BloggersType, CommentsType, PostsType, UsersType } from './types';
+import {
+  BloggersType,
+  CommentsType,
+  PostsType,
+  UserAccountDBType,
+  UsersType,
+  IPType,
+} from './types';
 
 const mongoUri = process.env.mongoURI || 'mongodb://0.0.0.0:27017';
 
@@ -10,8 +17,9 @@ let db = client.db('youtube');
 
 export const postsCollection = db.collection<Omit<PostsType, 'id'>>('posts');
 export const bloggersCollection = db.collection<Omit<BloggersType, 'id'>>('bloggers');
-export const usersCollection = db.collection<Omit<UsersType, 'id'>>('users');
+export const usersCollection = db.collection<Omit<UserAccountDBType, 'id'>>('users');
 export const commentsCollection = db.collection<Omit<CommentsType, 'id'>>('comments');
+export const ipCollections = db.collection<IPType>('ip');
 
 export async function runDb() {
   try {

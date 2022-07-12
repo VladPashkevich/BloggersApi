@@ -73,7 +73,7 @@ postsRouter.post(
     const comment = await commentsService.createComment(
       req.body.content,
       req.user!._id,
-      req.user!.login,
+      req.user!.accountData.login,
       postId,
     );
     if (comment) {

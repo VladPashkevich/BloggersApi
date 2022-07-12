@@ -18,9 +18,12 @@ usersRouter.post(
   async (req: Request, res: Response) => {
     const login: string = req.body.login;
     const password: string = req.body.password;
+    const email: string = req.body.email;
 
-    const newUser = await usersService.createdNewUser(login, password);
-    res.status(201).send(newUser);
+    const newUser = await usersService.createdNewUser(login, email, password);
+    if (newUser) {
+      res.status(201).send({ id: newUser.id, login: newUser.accountData.login });
+    }
   },
 );
 

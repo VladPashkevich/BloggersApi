@@ -10,6 +10,31 @@ export type BloggersType = {
 
 export type PostsTypeWithId = WithId<PostsType>;
 
+export type UserAccountDBType = {
+  id: ObjectId;
+  accountData: UserAccountType;
+  emailConfirmation: EmailConfirmationType;
+};
+export type UserAccountOnType = {
+  _id: ObjectId;
+  accountData: UserAccountType;
+  emailConfirmation: EmailConfirmationType;
+};
+
+export type EmailConfirmationType = {
+  isConfirmed: boolean;
+  confirmationCode: string;
+  expirationDate: Date;
+};
+
+export type UserAccountType = {
+  email: string;
+  login: string;
+  passwordHash: string;
+  passwordSalt: string;
+  createdAt: Date;
+};
+
 export type UsersType = {
   id: ObjectId;
   login: string;
@@ -84,4 +109,9 @@ export type CommentsDBType = {
   pageSize: number;
   totalCount: number;
   items: CommentType[];
+};
+export type IPType = {
+  ip: string;
+  point: string;
+  data: Date;
 };

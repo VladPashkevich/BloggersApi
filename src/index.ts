@@ -7,6 +7,8 @@ import { runDb } from './repositories/db';
 import { usersRouter } from './routers/users-router';
 import { commentsRouter } from './routers/comments-router';
 import { authRouter } from './routers/auth-router';
+import { emailRouter } from './routers/email-router';
+import { deleteRouter } from './routers/delete-router';
 
 const app = express();
 
@@ -18,6 +20,8 @@ app.use('/posts', postsRouter);
 app.use('/users', usersRouter);
 app.use('/comments', commentsRouter);
 app.use('/auth', authRouter);
+app.use('/email', emailRouter);
+app.use('/testing', deleteRouter);
 
 const port = process.env.PORT || 5000;
 
