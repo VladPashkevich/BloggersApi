@@ -61,7 +61,7 @@ export const usersRepository = {
     return null;
   },
   async findByLogin(login: string): Promise<UserAccountOnType | null> {
-    const user = usersCollection.findOne({ login: login });
+    const user = usersCollection.findOne({ 'accountData.login': login });
     if (user) {
       return user;
     }
@@ -84,7 +84,6 @@ export const usersRepository = {
   },
   async findByEmail(email: string): Promise<UserAccountOnType | null> {
     const user = await usersCollection.findOne({ 'accountData.email': email });
-    console.log(user);
     if (user) {
       return user;
     }

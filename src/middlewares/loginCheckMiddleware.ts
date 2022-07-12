@@ -4,6 +4,7 @@ import { usersService } from '../domain/users-service';
 
 export const userExistsValidator = body('login').custom(async (login) => {
   const user = await usersService.getUserByLogIn(login);
+  console.log(user);
   if (user) {
     throw new Error('UserLogin exists');
   }

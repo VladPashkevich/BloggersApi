@@ -15,12 +15,13 @@ export const authRouter = Router({});
 
 authRouter.post(
   '/registration',
+  mistake429,
   userLoginValidator,
   userPasswordValidator,
   emailValidator,
-  mistake429,
-  emailExistsValidator,
+
   userExistsValidator,
+  emailExistsValidator,
   inputValidationMiddleware,
 
   async (req: Request, res: Response) => {
@@ -46,7 +47,6 @@ authRouter.post(
 authRouter.post(
   '/registration-email-resending',
   mistake429,
-  emailExistsValidator,
   inputValidationMiddleware,
   async (req: Request, res: Response) => {
     const result = await authService.confirmEmailResending(req.body.email);
@@ -56,8 +56,8 @@ authRouter.post(
       res.status(400).send({
         errorsMessages: [
           {
-            message: 'string',
-            field: 'string',
+            message: 'email not exist',
+            field: 'email',
           },
         ],
       });
@@ -65,7 +65,7 @@ authRouter.post(
   },
 );
 
-authRouter.post('/login', async (req: Request, res: Response) => {
+authRouter.post('/login', mistake429, async (req: Request, res: Response) => {
   const user = await usersService.getUserByLogIn(req.body.login);
   if (!user) return res.sendStatus(401);
 
