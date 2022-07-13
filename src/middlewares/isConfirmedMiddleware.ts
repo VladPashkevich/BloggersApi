@@ -7,7 +7,6 @@ export const isConfirmedValidator = async (req: Request, res: Response, next: Ne
   let isConfirm = await usersCollection.findOne({
     'emailConfirmation.confirmationCode': code,
   });
-  console.log(isConfirm);
   if (!isConfirm) {
     res.status(400).send({
       errorsMessages: [
@@ -19,7 +18,7 @@ export const isConfirmedValidator = async (req: Request, res: Response, next: Ne
     });
     return;
   }
-  if (!isConfirm.emailConfirmation.confirmationCode) {
+  if (isConfirm.emailConfirmation.confirmationCode) {
     res.status(400).send({
       errorsMessages: [
         {
