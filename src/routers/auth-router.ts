@@ -3,6 +3,7 @@ import { jwtService } from '../application/jwt-service';
 import { authService } from '../domain/auth-service';
 import { usersService } from '../domain/users-service';
 import { emailExistsValidator } from '../middlewares/emailCheckMiddleware';
+import { emailFindValidator } from '../middlewares/emailExistValidation';
 import { emailValidator } from '../middlewares/emailValidation';
 import { inputValidationMiddleware } from '../middlewares/inputValidationMiddleware';
 import { mistake429 } from '../middlewares/ipChekMiddleware';
@@ -47,6 +48,7 @@ authRouter.post(
 authRouter.post(
   '/registration-email-resending',
   mistake429,
+  emailFindValidator,
   inputValidationMiddleware,
   async (req: Request, res: Response) => {
     const result = await authService.confirmEmailResending(req.body.email);

@@ -5,6 +5,7 @@ import { ipCollections } from '../repositories/db';
 export const mistake429 = async (req: Request, res: Response, next: NextFunction) => {
   const point = req.method + req.originalUrl;
   const ip = req.ip;
+  console.log(ip);
 
   const newCrud = {
     point: point,

@@ -22,6 +22,7 @@ app.use('/comments', commentsRouter);
 app.use('/auth', authRouter);
 app.use('/email', emailRouter);
 app.use('/testing', deleteRouter);
+app.set('trust proxy', true);
 
 const port = process.env.PORT || 5000;
 
