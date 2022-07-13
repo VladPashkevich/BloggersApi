@@ -20,11 +20,14 @@ export const usersRepository = {
       .limit(pageSize)
       .skip((pageNumber - 1) * pageSize)
       .toArray();
+
+    console.log(usersTypeFromDb);
     const totalCount = await usersCollection.countDocuments();
     let users = usersTypeFromDb.map((u) => ({
       id: u._id,
       login: u.accountData.login,
     }));
+
     return {
       users: users,
       totalCount: totalCount,
@@ -78,7 +81,7 @@ export const usersRepository = {
   async updateConfirmation(id: ObjectId) {
     let result = await usersCollection.updateOne(
       { _id: id },
-      { $set: { 'emailConfirmation.isConfirmed': true } },
+      { $set: { 'user.emailConfirmation.isConfirmed': true } },
     );
     return result.modifiedCount === 1;
   },

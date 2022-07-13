@@ -5,6 +5,7 @@ import { usersRepository } from '../repositories/users-db-repository';
 import { usersService } from './users-service';
 import { v4 as uuidv4 } from 'uuid';
 import add from 'date-fns/add';
+import { isConfirmedValidator } from '../middlewares/isConfirmedMiddleware';
 
 export const authService = {
   async generateHash(password: string) {
@@ -19,11 +20,11 @@ export const authService = {
     return newUser;
   },
 
-  async confirmEmail(code: string): Promise<boolean> {
+  async confirmCode(code: string): Promise<boolean> {
     let user = await usersRepository.findByConfirmationCode(code);
     if (!user) return false;
     if (user.emailConfirmation.confirmationCode !== code) return false;
-
+    if (user.emailConfirmation.isConfirmed) return false;
     if (user.emailConfirmation.expirationDate < new Date()) return false;
     let result = await usersRepository.updateConfirmation(user._id);
     return result;
@@ -38,7 +39,7 @@ export const authService = {
       id: _id,
       ...rest,
       emailConfirmation: {
-        isConfirmed: false,
+        isConfirmed: true,
         confirmationCode: code,
         expirationDate: add(new Date(), {
           hours: 24,

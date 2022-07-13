@@ -38,9 +38,11 @@ authRouter.post(
   mistake429,
   isConfirmedValidator,
   async (req: Request, res: Response) => {
-    const result = await authService.confirmEmail(req.body.code);
+    const result = await authService.confirmCode(req.body.code);
     if (result) {
       res.sendStatus(204);
+    } else {
+      res.sendStatus(400);
     }
   },
 );
