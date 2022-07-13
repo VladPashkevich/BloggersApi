@@ -42,7 +42,14 @@ authRouter.post(
     if (result) {
       res.sendStatus(204);
     } else {
-      res.sendStatus(400);
+      res.status(400).send({
+        errorsMessages: [
+          {
+            message: 'user is confirmed',
+            field: 'code',
+          },
+        ],
+      });
     }
   },
 );
@@ -55,13 +62,13 @@ authRouter.post(
   async (req: Request, res: Response) => {
     const result = await authService.confirmEmailResending(req.body.email);
     if (result) {
-      res.sendStatus(204);
+      res.status(204).send();
     } else {
       res.status(400).send({
         errorsMessages: [
           {
-            message: 'email not exist',
-            field: 'email',
+            message: 'string',
+            field: 'code',
           },
         ],
       });

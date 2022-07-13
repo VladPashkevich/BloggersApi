@@ -33,6 +33,7 @@ export const authService = {
   async confirmEmailResending(email: string): Promise<boolean> {
     let user = await usersRepository.findByEmail(email);
     if (!user) return false;
+    if (user.emailConfirmation.isConfirmed) return false;
     const code = uuidv4();
     const { _id, emailConfirmation, ...rest } = user;
     const newUser = {

@@ -20,8 +20,6 @@ export const usersRepository = {
       .limit(pageSize)
       .skip((pageNumber - 1) * pageSize)
       .toArray();
-
-    console.log(usersTypeFromDb);
     const totalCount = await usersCollection.countDocuments();
     let users = usersTypeFromDb.map((u) => ({
       id: u._id,
