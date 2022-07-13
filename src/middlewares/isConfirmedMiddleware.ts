@@ -19,7 +19,7 @@ export const isConfirmedValidator = async (req: Request, res: Response, next: Ne
     return;
   }
   console.log(isConfirm.emailConfirmation.confirmationCode);
-  if (isConfirm.emailConfirmation.confirmationCode) {
+  if (!isConfirm.emailConfirmation.confirmationCode) {
     res.status(400).send({
       errorsMessages: [
         {
