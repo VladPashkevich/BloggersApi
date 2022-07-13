@@ -4,6 +4,7 @@ import { UserAccountDBType } from '../repositories/types';
 import { usersRepository } from '../repositories/users-db-repository';
 import { usersService } from './users-service';
 import { v4 as uuidv4 } from 'uuid';
+import add from 'date-fns/add';
 
 export const authService = {
   async generateHash(password: string) {
@@ -32,8 +33,18 @@ export const authService = {
     let user = await usersRepository.findByEmail(email);
     if (!user) return false;
     const code = uuidv4();
-    const { _id, ...rest } = user;
-    const newUser = { id: _id, ...rest };
+    const { _id, emailConfirmation, ...rest } = user;
+    const newUser = {
+      id: _id,
+      ...rest,
+      emailConfirmation: {
+        isConfirmed: false,
+        confirmationCode: code,
+        expirationDate: add(new Date(), {
+          hours: 24,
+        }),
+      },
+    };
     await usersRepository.updateConfirmationCode(user._id, code);
     await emailManager.sendEmailConfirmationMessage(newUser);
     return true;
