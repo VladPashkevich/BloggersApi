@@ -79,7 +79,7 @@ export const usersRepository = {
   async updateConfirmation(id: ObjectId) {
     let result = await usersCollection.updateOne(
       { _id: id },
-      { $set: { 'user.emailConfirmation.isConfirmed': true } },
+      { $set: { 'emailConfirmation.isConfirmed': true } },
     );
     return result.modifiedCount === 1;
   },
