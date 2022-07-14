@@ -7,6 +7,7 @@ import { emailFindValidator } from '../middlewares/emailExistValidation';
 import { emailValidator } from '../middlewares/emailValidation';
 import { inputValidationMiddleware } from '../middlewares/inputValidationMiddleware';
 import { mistake429 } from '../middlewares/ipChekMiddleware';
+import { isConfirmedEmailValidator } from '../middlewares/isConfirmedEmail';
 import { isConfirmedValidator } from '../middlewares/isConfirmedMiddleware';
 import { userExistsValidator } from '../middlewares/loginCheckMiddleware';
 import { userLoginValidator } from '../middlewares/userLoginValidation';
@@ -57,6 +58,7 @@ authRouter.post(
 authRouter.post(
   '/registration-email-resending',
   mistake429,
+  isConfirmedEmailValidator,
   emailFindValidator,
   inputValidationMiddleware,
   async (req: Request, res: Response) => {
