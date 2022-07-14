@@ -7,16 +7,16 @@ export const isConfirmedEmailValidator = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const code = req.body.code;
+  const email = req.body.email;
   let isConfirm = await usersCollection.findOne({
-    'emailConfirmation.confirmationCode': code,
+    'accountData.email': email,
   });
   if (isConfirm && isConfirm.emailConfirmation.isConfirmed) {
     res.status(400).send({
       errorsMessages: [
         {
-          message: 'user is confirmed',
-          field: 'code',
+          message: 'email is confirmed',
+          field: 'email',
         },
       ],
     });
