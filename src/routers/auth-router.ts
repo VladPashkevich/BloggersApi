@@ -83,7 +83,7 @@ authRouter.post(
 authRouter.post('/refresh-token', async (req: Request, res: Response) => {
   const refreshToken = req.cookies.refreshToken;
   const userId = await jwtService.getUserIdByToken(refreshToken);
-  if (!userId) return null;
+  if (!userId) return res.sendStatus(401);
 
   const token = await tokenCollections.findOne({ token: refreshToken, userId });
   if (!token) return res.sendStatus(401);
