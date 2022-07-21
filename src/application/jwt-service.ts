@@ -24,12 +24,10 @@ export const jwtService = {
 
   async getUserIdByToken(token: string) {
     try {
-      const result: any = jwt.verify(token, settings.JWT_SECRET, (error, decode) => {
-        console.log('Result', decode);
+      jwt.verify(token, settings.JWT_SECRET, (error, decode: any) => {
         if (error) return null;
+        return new ObjectId(decode.userId);
       });
-
-      return new ObjectId(result.userId);
     } catch (error) {
       return null;
     }
