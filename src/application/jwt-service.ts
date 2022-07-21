@@ -42,11 +42,15 @@ export const jwtService = {
     }
   },
   async refreshTokenKill(token: string): Promise<boolean> {
-    let result = await tokenCollections.deleteOne({ refreshToken: token });
-    if (result === null) {
+    let result = await this.refreshTokenKillIn(token);
+    if (result === false) {
       return false;
     } else {
       return true;
     }
+  },
+  async refreshTokenKillIn(token: string): Promise<boolean> {
+    const result = await tokenCollections.deleteOne({ refreshToken: token });
+    return result.deletedCount === 1;
   },
 };

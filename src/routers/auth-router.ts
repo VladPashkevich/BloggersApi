@@ -112,12 +112,11 @@ authRouter.post('/logout', async (req: Request, res: Response) => {
   const tokenExpire = await jwtService.getUserIdByToken(refreshToken);
   if (tokenExpire === null) return res.sendStatus(401);
   const result = await jwtService.refreshTokenKill(refreshToken);
-  console.log('RESULT', result);
-  if (result) {
-    res.sendStatus(401);
+  if (result === true) {
+    res.sendStatus(204);
     return;
   } else {
-    res.sendStatus(204);
+    res.sendStatus(401);
     return;
   }
 });
