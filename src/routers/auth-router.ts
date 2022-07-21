@@ -13,6 +13,7 @@ import { isConfirmedValidator } from '../middlewares/isConfirmedMiddleware';
 import { userExistsValidator } from '../middlewares/loginCheckMiddleware';
 import { userLoginValidator } from '../middlewares/userLoginValidation';
 import { userPasswordValidator } from '../middlewares/userPasswordValidation';
+import { usersAuthMiddleware } from '../middlewares/users-auth-middleware';
 import { tokenCollections, usersCollection } from '../repositories/db';
 
 export const authRouter = Router({});
@@ -119,7 +120,7 @@ authRouter.post('/logout', async (req: Request, res: Response) => {
   res.sendStatus(204);
 });
 
-authRouter.post('/me', async (req: Request, res: Response) => {
+authRouter.post('/me', usersAuthMiddleware, async (req: Request, res: Response) => {
   const authHeader = req.headers.authorization;
   const accessToken = authHeader?.split('Bearer ')[1];
 
