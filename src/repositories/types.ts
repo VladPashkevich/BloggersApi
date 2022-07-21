@@ -1,5 +1,16 @@
 import { ObjectId, WithId } from 'mongodb';
 
+export type TokenType = WithId<{
+  refreshToken: string;
+  userId: ObjectId;
+}>;
+
+export type UserForMe = {
+  email: string;
+  login: string;
+  userId: ObjectId;
+};
+
 export type BloggersTypeWithId = WithId<BloggersType>;
 
 export type BloggersType = {

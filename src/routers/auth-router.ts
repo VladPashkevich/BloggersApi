@@ -1,3 +1,4 @@
+import { id } from 'date-fns/locale';
 import { Router, Request, Response } from 'express';
 import { jwtService } from '../application/jwt-service';
 import { authService } from '../domain/auth-service';
@@ -12,6 +13,7 @@ import { isConfirmedValidator } from '../middlewares/isConfirmedMiddleware';
 import { userExistsValidator } from '../middlewares/loginCheckMiddleware';
 import { userLoginValidator } from '../middlewares/userLoginValidation';
 import { userPasswordValidator } from '../middlewares/userPasswordValidation';
+import { tokenCollections, usersCollection } from '../repositories/db';
 
 export const authRouter = Router({});
 
@@ -77,6 +79,61 @@ authRouter.post(
     }
   },
 );
+authRouter.post('/refresh-token', async (req: Request, res: Response) => {
+  const refreshToken = req.cookies.refreshToken;
+  const userId = await jwtService.getUserIdByToken(refreshToken);
+  if (!userId) return null;
+
+  const token = await tokenCollections.findOne({ token: refreshToken, userId });
+  if (!token) return res.sendStatus(401);
+
+  const checkUser = await usersService.getUserById(userId);
+  if (checkUser) {
+    const user = await usersCollection.findOne({ _id: userId });
+    if (!user) return null;
+    const token = await jwtService.createJWT(user);
+    const refreshToken = await jwtService.createJWTRefresh(user);
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: true,
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+    res.status(200).send({ accessToken: token });
+  } else {
+    res.sendStatus(401);
+  }
+});
+
+authRouter.post('/logout', async (req: Request, res: Response) => {
+  const refreshToken = req.cookies.refreshToken;
+  const userId = await jwtService.getUserIdByToken(refreshToken);
+  if (!userId) return null;
+  const token = await tokenCollections.findOne({ token: refreshToken, userId });
+  if (!token) return res.sendStatus(401);
+
+  const checkUser = await usersService.getUserById(userId);
+  if (!checkUser) return res.sendStatus(401);
+
+  await tokenCollections.deleteOne({ token: refreshToken, userId });
+  res.clearCookie('refreshToken');
+  res.sendStatus(204);
+});
+
+authRouter.post('/me', async (req: Request, res: Response) => {
+  const authHeader = req.headers.authorization;
+  const accessToken = authHeader?.split('Bearer ')[1];
+
+  if (accessToken) {
+    const userId = await jwtService.getUserIdByToken(accessToken);
+    if (!userId) return null;
+    const checkUser = await usersService.getUserByIdToken(userId);
+    if (checkUser) {
+      res.status(200).send(checkUser);
+    } else {
+      res.sendStatus(401);
+    }
+  }
+});
 
 authRouter.post('/login', mistake429, async (req: Request, res: Response) => {
   const user = await usersService.getUserByLogIn(req.body.login);
@@ -89,7 +146,13 @@ authRouter.post('/login', mistake429, async (req: Request, res: Response) => {
   );
   if (areCredentialsCorrect) {
     const token = await jwtService.createJWT(user);
-    res.status(200).send({ token: token });
+    const refreshToken = await jwtService.createJWTRefresh(user);
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: true,
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+    res.status(200).send({ accessToken: token });
   } else {
     res.sendStatus(401);
   }

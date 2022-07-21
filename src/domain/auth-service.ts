@@ -1,11 +1,12 @@
 import bcrypt from 'bcrypt';
 import { emailManager } from '../mangers/email-managers';
-import { UserAccountDBType } from '../repositories/types';
+import { UserAccountDBType, UserForMe } from '../repositories/types';
 import { usersRepository } from '../repositories/users-db-repository';
 import { usersService } from './users-service';
 import { v4 as uuidv4 } from 'uuid';
 import add from 'date-fns/add';
 import { isConfirmedValidator } from '../middlewares/isConfirmedMiddleware';
+import { ObjectId } from 'mongodb';
 
 export const authService = {
   async generateHash(password: string) {

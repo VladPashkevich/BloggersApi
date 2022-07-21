@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import {
   UserAccountDBType,
   UserAccountOnType,
+  UserForMe,
   UsersDBType,
   UsersType,
   UsersTypeFromDB,
@@ -67,6 +68,10 @@ export const usersService = {
   async getUserById(id: ObjectId): Promise<UsersTypeFromDB | null> {
     return usersRepository.getUserById(id);
   },
+  async getUserByIdToken(id: ObjectId): Promise<UserForMe | null> {
+    return usersRepository.getUserByIdToken(id);
+  },
+
   async getUserByIdForAuth(_id: ObjectId): Promise<UserAccountOnType | null> {
     return usersRepository.getUserByIdForAuth(_id);
   },

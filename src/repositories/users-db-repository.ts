@@ -3,6 +3,7 @@ import { usersCollection } from './db';
 import {
   UserAccountDBType,
   UserAccountOnType,
+  UserForMe,
   UsersType,
   UsersTypeFromDB,
   UserType,
@@ -50,6 +51,18 @@ export const usersRepository = {
       return {
         id: user._id,
         login: user.accountData.login,
+      };
+    }
+    return null;
+  },
+
+  async getUserByIdToken(id: ObjectId): Promise<UserForMe | null> {
+    const user = await usersCollection.findOne({ _id: id });
+    if (user) {
+      return {
+        email: user.accountData.email,
+        login: user.accountData.login,
+        userId: user._id,
       };
     }
     return null;

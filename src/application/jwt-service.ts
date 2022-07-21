@@ -2,11 +2,24 @@ import { UserAccountOnType, UsersType, UserType } from '../repositories/types';
 import jwt from 'jsonwebtoken';
 import { settings } from '../settings';
 import { ObjectId } from 'mongodb';
+import { tokenCollections } from '../repositories/db';
 
 export const jwtService = {
   async createJWT(user: UserAccountOnType) {
-    const token = jwt.sign({ userId: user._id }, settings.JWT_SECRET, { expiresIn: '24h' });
+    const token = jwt.sign({ userId: user._id }, settings.JWT_SECRET, { expiresIn: '1d' });
     return token;
+  },
+
+  async createJWTRefresh(user: UserAccountOnType) {
+    const tokenRefresh = jwt.sign({ userId: user._id }, settings.JWT_SECRET, {
+      expiresIn: '1d',
+    });
+    await tokenCollections.insertOne({
+      _id: new ObjectId(),
+      refreshToken: tokenRefresh,
+      userId: user._id,
+    });
+    return tokenRefresh;
   },
 
   async getUserIdByToken(token: string) {

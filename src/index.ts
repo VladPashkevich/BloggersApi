@@ -9,11 +9,13 @@ import { commentsRouter } from './routers/comments-router';
 import { authRouter } from './routers/auth-router';
 import { emailRouter } from './routers/email-router';
 import { deleteRouter } from './routers/delete-router';
+import cookieparser from 'cookie-parser';
 
 const app = express();
 
 app.use(cors());
 app.use(bodyParser.json());
+app.use(cookieparser());
 
 app.use('/bloggers', bloggersRouter);
 app.use('/posts', postsRouter);

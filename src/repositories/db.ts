@@ -7,6 +7,7 @@ import {
   UserAccountDBType,
   UsersType,
   IPType,
+  TokenType,
 } from './types';
 
 const mongoUri = process.env.mongoURI || 'mongodb://0.0.0.0:27017';
@@ -20,6 +21,7 @@ export const bloggersCollection = db.collection<Omit<BloggersType, 'id'>>('blogg
 export const usersCollection = db.collection<Omit<UserAccountDBType, 'id'>>('users');
 export const commentsCollection = db.collection<Omit<CommentsType, 'id'>>('comments');
 export const ipCollections = db.collection<IPType>('ip');
+export const tokenCollections = db.collection<TokenType>('token');
 
 export async function runDb() {
   try {
