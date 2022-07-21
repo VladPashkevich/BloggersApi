@@ -122,7 +122,7 @@ authRouter.post('/logout', async (req: Request, res: Response) => {
 
 authRouter.post('/me', usersAuthMiddleware, async (req: Request, res: Response) => {
   const authHeader = req.headers.authorization;
-  const accessToken = authHeader?.split('Bearer ')[1];
+  const accessToken = authHeader?.split(' ')[1];
 
   if (accessToken) {
     const userId = await jwtService.getUserIdByToken(accessToken);
