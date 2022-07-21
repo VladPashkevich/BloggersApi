@@ -110,7 +110,7 @@ authRouter.post('/logout', async (req: Request, res: Response) => {
   const refreshToken = req.cookies.refreshToken;
   const tokenExpire = await jwtService.getUserIdByToken(refreshToken);
   if (tokenExpire === null) return res.sendStatus(401);
-  const result = await tokenCollections.deleteOne({ token: refreshToken });
+  const result = await tokenCollections.deleteOne({ refreshToken: refreshToken });
   if (result) {
     res.sendStatus(204);
     return;
@@ -125,6 +125,7 @@ authRouter.get('/me', usersAuthMiddleware, async (req: Request, res: Response) =
 
   if (!accessToken) {
     res.sendStatus(401);
+    return;
   } else {
     const userId = await jwtService.getUserIdByToken(accessToken);
     if (!userId) return res.sendStatus(401);
