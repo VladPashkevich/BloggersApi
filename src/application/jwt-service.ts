@@ -6,13 +6,13 @@ import { tokenCollections } from '../repositories/db';
 
 export const jwtService = {
   async createJWT(user: UserAccountOnType) {
-    const token = jwt.sign({ userId: user._id }, settings.JWT_SECRET, { expiresIn: '1d' });
+    const token = jwt.sign({ userId: user._id }, settings.JWT_SECRET, { expiresIn: '10s' });
     return token;
   },
 
   async createJWTRefresh(user: UserAccountOnType) {
     const tokenRefresh = jwt.sign({ userId: user._id }, settings.JWT_SECRET, {
-      expiresIn: '1d',
+      expiresIn: '20s',
     });
     await tokenCollections.insertOne({
       _id: new ObjectId(),
