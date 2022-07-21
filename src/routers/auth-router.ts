@@ -83,17 +83,14 @@ authRouter.post(
 authRouter.post('/refresh-token', async (req: Request, res: Response) => {
   const refreshToken = req.cookies.refreshToken;
   if (!refreshToken) return res.sendStatus(401);
-  console.log('Noken', refreshToken);
   const tokenExpire = await jwtService.getUserIdByToken(refreshToken);
   if (tokenExpire === null) return res.sendStatus(401);
   const findToken = await jwtService.refreshTokenFind(refreshToken);
   if (findToken === false) return res.sendStatus(401);
   await jwtService.refreshTokenKill(refreshToken);
   const userId = await jwtService.getUserIdByToken(refreshToken);
-  console.log('USERID', userId);
   if (!userId) return res.sendStatus(401);
   const user = await usersService.getUserByIdForAuth(userId);
-  console.log('USER', user);
   if (!user) {
     res.sendStatus(401);
     return;
@@ -114,7 +111,7 @@ authRouter.post('/logout', async (req: Request, res: Response) => {
   if (!refreshToken) return res.sendStatus(401);
   const tokenExpire = await jwtService.getUserIdByToken(refreshToken);
   if (tokenExpire === null) return res.sendStatus(401);
-  const result = await tokenCollections.deleteOne({ refreshToken: refreshToken });
+  const result = await jwtService.refreshTokenKill(refreshToken);
   if (result) {
     res.sendStatus(204);
     return;
