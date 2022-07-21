@@ -119,7 +119,7 @@ authRouter.post('/logout', async (req: Request, res: Response) => {
   res.sendStatus(204);
 });
 
-authRouter.get('/me', usersAuthMiddleware, async (req: Request, res: Response) => {
+authRouter.get('/me', async (req: Request, res: Response) => {
   const authHeader = req.headers.authorization;
   const accessToken = authHeader?.split(' ')[1];
 
