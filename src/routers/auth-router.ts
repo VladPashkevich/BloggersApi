@@ -85,7 +85,7 @@ authRouter.post('/refresh-token', async (req: Request, res: Response) => {
   const userId = await jwtService.getUserIdByToken(refreshToken);
   if (!userId) return res.sendStatus(401);
 
-  const token = await tokenCollections.findOne({ token: refreshToken, userId });
+  const token = await tokenCollections.findOne({ refreshToken: refreshToken, userId });
   if (!token) return res.sendStatus(401);
 
   //const user = await usersService.getUserById(userId);
@@ -132,6 +132,8 @@ authRouter.get('/me', async (req: Request, res: Response) => {
     } else {
       res.sendStatus(401);
     }
+  } else {
+    res.sendStatus(401);
   }
 });
 
