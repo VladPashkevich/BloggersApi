@@ -126,7 +126,7 @@ authRouter.post('/me', usersAuthMiddleware, async (req: Request, res: Response) 
 
   if (accessToken) {
     const userId = await jwtService.getUserIdByToken(accessToken);
-    if (!userId) return null;
+    if (!userId) return res.sendStatus(401);
     const checkUser = await usersService.getUserByIdToken(userId);
     if (checkUser) {
       res.status(200).send(checkUser);
