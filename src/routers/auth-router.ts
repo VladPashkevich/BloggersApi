@@ -82,61 +82,54 @@ authRouter.post(
 );
 authRouter.post('/refresh-token', async (req: Request, res: Response) => {
   const refreshToken = req.cookies.refreshToken;
+  if (!refreshToken) return res.sendStatus(401);
+  const tokenExpire = await jwtService.getUserIdByToken(refreshToken);
+  if (tokenExpire === null) return res.sendStatus(401);
+  const findToken = await jwtService.refreshTokenFind(refreshToken);
+  if (findToken === false) return res.sendStatus(401);
+  await jwtService.refreshTokenKill(refreshToken);
   const userId = await jwtService.getUserIdByToken(refreshToken);
-  console.log('Userid', userId);
-  if (!userId) return res.sendStatus(401);
+  const user = await usersService.getUserByIdForAuth(userId);
+  if (!user) {
+    res.sendStatus(401);
+    return;
+  }
+  const token = await jwtService.createJWT(user);
+  const RefreshToken = await jwtService.createJWTRefresh(user);
 
-  const token = await tokenCollections.findOne({ refreshToken: refreshToken });
-  console.log('token', token);
-  if (!token) return res.sendStatus(401);
+  res.cookie('refreshToken', RefreshToken, {
+    httpOnly: true,
+    secure: true,
+    maxAge: 20 * 1000,
+  });
+  res.status(200).send({ accessToken: token });
+});
 
-  //const user = await usersService.getUserById(userId);
-  const user = await usersCollection.findOne({ _id: userId });
-  console.log('User', user);
-  if (user) {
-    const token = await jwtService.createJWT(user);
-    const refreshToken = await jwtService.createJWTRefresh(user);
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: true,
-      maxAge: 20 * 1000,
-    });
-    res.status(200).send({ accessToken: token });
+authRouter.post('/logout', async (req: Request, res: Response) => {
+  const refreshToken = req.cookies.refreshToken;
+  const tokenExpire = await jwtService.getUserIdByToken(refreshToken);
+  if (tokenExpire === null) return res.sendStatus(401);
+  const result = await tokenCollections.deleteOne({ token: refreshToken });
+  if (result) {
+    res.sendStatus(204);
+    return;
   } else {
     res.sendStatus(401);
   }
 });
 
-authRouter.post('/logout', async (req: Request, res: Response) => {
-  const refreshToken = req.cookies.refreshToken;
-  const userId = await jwtService.getUserIdByTokenVerify(refreshToken);
-  if (!userId) return res.sendStatus(401);
-  /*const token = await tokenCollections.findOne({ token: refreshToken, userId });
-  if (!token) return res.sendStatus(401);
-
-  const checkUser = await usersService.getUserById(userId);
-  if (!checkUser) return res.sendStatus(401);*/
-
-  await tokenCollections.deleteOne({ token: refreshToken, userId });
-  res.clearCookie('refreshToken');
-  res.sendStatus(204);
-});
-
-authRouter.get('/me', async (req: Request, res: Response) => {
+authRouter.get('/me', usersAuthMiddleware, async (req: Request, res: Response) => {
   const authHeader = req.headers.authorization;
   const accessToken = authHeader?.split(' ')[1];
 
-  if (accessToken) {
-    const userId = await jwtService.getUserIdByToken(accessToken);
-    if (!userId) return res.sendStatus(401);
-    const checkUser = await usersService.getUserByIdToken(userId);
-    if (checkUser) {
-      res.status(200).send(checkUser);
-    } else {
-      res.sendStatus(401);
-    }
-  } else {
+  if (!accessToken) {
     res.sendStatus(401);
+  } else {
+    const userId = await jwtService.getUserIdByToken(accessToken);
+    const user = await usersService.getUserByIdToken(userId);
+    if (user) {
+      res.status(200).send(user);
+    }
   }
 });
 

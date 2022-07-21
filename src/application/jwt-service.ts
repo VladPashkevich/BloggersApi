@@ -24,24 +24,29 @@ export const jwtService = {
 
   async getUserIdByToken(token: string) {
     try {
-      jwt.verify(token, settings.JWT_SECRET, (error, decode: any) => {
-        if (error) return null;
-        return new ObjectId(decode.userId);
-      });
+      const result: any = jwt.verify(token, settings.JWT_SECRET);
+      return result.userId;
     } catch (error) {
       return null;
     }
   },
-  async getUserIdByTokenVerify(token: string) {
-    try {
-      const result: any = jwt.verify(token, settings.JWT_SECRET, (error) => {
-        console.log('Eror', error);
-        if (error) return null;
 
-        return true;
-      });
-    } catch (error) {
-      return null;
+  async refreshTokenFind(token: string): Promise<boolean> {
+    let refreshTokenFind = await tokenCollections.findOne({ refreshToken: token });
+    if (refreshTokenFind === null) return false;
+    let refreshTokenTimeOut = await jwtService.getUserIdByToken(token);
+    if (refreshTokenTimeOut === null) {
+      return false;
+    } else {
+      return true;
+    }
+  },
+  async refreshTokenKill(token: string): Promise<boolean> {
+    let result = await tokenCollections.findOne({ refreshToken: token });
+    if (result === null) {
+      return false;
+    } else {
+      return true;
     }
   },
 };
