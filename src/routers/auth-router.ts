@@ -89,15 +89,16 @@ authRouter.post('/refresh-token', async (req: Request, res: Response) => {
   if (findToken === false) return res.sendStatus(401);
   await jwtService.refreshTokenKill(refreshToken);
   const userId = await jwtService.getUserIdByToken(refreshToken);
+  if (!userId) return res.sendStatus(401);
   const user = await usersService.getUserByIdForAuth(userId);
   if (!user) {
     res.sendStatus(401);
     return;
   }
   const token = await jwtService.createJWT(user);
-  const RefreshToken = await jwtService.createJWTRefresh(user);
+  const refreshtoken = await jwtService.createJWTRefresh(user);
 
-  res.cookie('refreshToken', RefreshToken, {
+  res.cookie('refreshToken', refreshtoken, {
     httpOnly: true,
     secure: true,
     maxAge: 20 * 1000,
@@ -126,6 +127,7 @@ authRouter.get('/me', usersAuthMiddleware, async (req: Request, res: Response) =
     res.sendStatus(401);
   } else {
     const userId = await jwtService.getUserIdByToken(accessToken);
+    if (!userId) return res.sendStatus(401);
     const user = await usersService.getUserByIdToken(userId);
     if (user) {
       res.status(200).send(user);
