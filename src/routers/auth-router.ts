@@ -83,13 +83,16 @@ authRouter.post(
 authRouter.post('/refresh-token', async (req: Request, res: Response) => {
   const refreshToken = req.cookies.refreshToken;
   const userId = await jwtService.getUserIdByToken(refreshToken);
+  console.log('Userid', userId);
   if (!userId) return res.sendStatus(401);
 
-  const token = await tokenCollections.findOne({ refreshToken: refreshToken, userId });
+  const token = await tokenCollections.findOne({ refreshToken: refreshToken });
+  console.log('token', token);
   if (!token) return res.sendStatus(401);
 
   //const user = await usersService.getUserById(userId);
   const user = await usersCollection.findOne({ _id: userId });
+  console.log('User', user);
   if (user) {
     const token = await jwtService.createJWT(user);
     const refreshToken = await jwtService.createJWTRefresh(user);
