@@ -3,25 +3,28 @@ import { mongoIdValidator } from '../middlewares/idValidator';
 import { inputValidationMiddleware } from '../middlewares/inputValidationMiddleware';
 import { nameValidator } from '../middlewares/nameValidator';
 import { youtubeUrlValidator } from '../middlewares/youtubeUrlValidator';
-import { bloggersService } from '../domain/bloggers-service';
 import { superAdminAuthMiddleware } from '../middlewares/basicAutht';
 import { titleValidator } from '../middlewares/titleValidator';
 import { shortDescriptionValidator } from '../middlewares/shortDescriptionValidator';
 import { contentValidator } from '../middlewares/contentValidator';
-import { paramBloggerIdValidator } from '../middlewares/paramBloggersIdValidator';
-import { ObjectId } from 'mongodb';
+import { BloggersController } from '../controllers/bloggers-controller';
+import { container } from '../root/composition-root';
+
+const bloggersController = container.resolve(BloggersController);
 
 export const bloggersRouter = Router({});
 
-bloggersRouter.get('/', async (req: Request, res: Response) => {
+/*bloggersRouter.get('/', async (req: Request, res: Response) => {
   const searchNameTerm = (req.query.SearchNameTerm as string) || '';
   const pageNumber = Number(req.query.PageNumber) || 1;
   const pageSize = Number(req.query.PageSize) || 10;
   const allBloggers = await bloggersService.getBloggers(pageNumber, pageSize, searchNameTerm);
   res.send(allBloggers);
-});
+});*/
 
-bloggersRouter.get(
+bloggersRouter.get('/', bloggersController.getAllBloggers.bind(bloggersController));
+
+/*bloggersRouter.get(
   '/:bloggerId',
   mongoIdValidator('bloggerId'),
   inputValidationMiddleware,
@@ -33,9 +36,16 @@ bloggersRouter.get(
       res.send(404);
     }
   },
-);
+);*/
 
 bloggersRouter.get(
+  '/:bloggerId',
+  mongoIdValidator('bloggerId'),
+  inputValidationMiddleware,
+  bloggersController.deleteBloggerByID.bind(bloggersController),
+);
+
+/*bloggersRouter.get(
   '/:bloggerId/posts',
   mongoIdValidator('bloggerId'),
   async (req: Request, res: Response) => {
@@ -52,9 +62,15 @@ bloggersRouter.get(
     );
     res.status(200).send(allPostsOfBlogger);
   },
+);*/
+
+bloggersRouter.get(
+  '/:bloggerId/posts',
+  mongoIdValidator('bloggerId'),
+  bloggersController.getPostByBloggerID.bind(bloggersController),
 );
 
-bloggersRouter.post(
+/*bloggersRouter.post(
   '/',
   superAdminAuthMiddleware,
   nameValidator,
@@ -64,9 +80,18 @@ bloggersRouter.post(
     const newBlogger = await bloggersService.createdBlogger(req.body.name, req.body.youtubeUrl);
     res.status(201).send(newBlogger);
   },
-);
+);*/
 
 bloggersRouter.post(
+  '/',
+  superAdminAuthMiddleware,
+  nameValidator,
+  youtubeUrlValidator,
+  inputValidationMiddleware,
+  bloggersController.createBlogger.bind(bloggersController),
+);
+
+/*bloggersRouter.post(
   '/:bloggerId/posts',
   superAdminAuthMiddleware,
   titleValidator,
@@ -91,9 +116,20 @@ bloggersRouter.post(
       res.send(404);
     }
   },
+);*/
+
+bloggersRouter.post(
+  '/:bloggerId/posts',
+  superAdminAuthMiddleware,
+  titleValidator,
+  shortDescriptionValidator,
+  mongoIdValidator('bloggerId'),
+  contentValidator,
+  inputValidationMiddleware,
+  bloggersController.createPostByBloggerID.bind(bloggersController),
 );
 
-bloggersRouter.put(
+/*bloggersRouter.put(
   '/:bloggerId',
   superAdminAuthMiddleware,
   mongoIdValidator('bloggerId'),
@@ -120,9 +156,19 @@ bloggersRouter.put(
       res.send(404);
     }
   },
+);*/
+
+bloggersRouter.put(
+  '/:bloggerId',
+  superAdminAuthMiddleware,
+  mongoIdValidator('bloggerId'),
+  nameValidator,
+  youtubeUrlValidator,
+  inputValidationMiddleware,
+  bloggersController.updateBlogger.bind(bloggersController),
 );
 
-bloggersRouter.delete(
+/*bloggersRouter.delete(
   '/:bloggerId',
   superAdminAuthMiddleware,
   mongoIdValidator('bloggerId'),
@@ -135,4 +181,12 @@ bloggersRouter.delete(
       res.sendStatus(404);
     }
   },
+);*/
+
+bloggersRouter.delete(
+  '/:bloggerId',
+  superAdminAuthMiddleware,
+  mongoIdValidator('bloggerId'),
+  inputValidationMiddleware,
+  bloggersController.deleteBloggerByID.bind(bloggersController),
 );

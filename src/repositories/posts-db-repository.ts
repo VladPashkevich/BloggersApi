@@ -1,21 +1,21 @@
 import { ObjectId } from 'mongodb';
 import { posts } from './database';
-import { bloggersCollection, postsCollection } from './db';
-import { CommentsType, PostsType } from './types';
+import { BloggersModel, PostsModel } from './db';
+import { injectable } from 'inversify';
+import { PostsDBType, PostsType } from '../types/posts-type';
 
 interface PostsData {
   posts: PostsType[];
   totalCount: number;
 }
-
-export const postsRepository = {
+@injectable()
+export class PostsRepository {
   async getPosts(pageNumber: number, pageSize: number): Promise<PostsData> {
-    const postsFromDB = await postsCollection
-      .find({})
+    const postsFromDB = await PostsModel.find({})
       .limit(pageSize)
       .skip((pageNumber - 1) * pageSize)
-      .toArray();
-    const totalCount = await postsCollection.countDocuments();
+      .lean();
+    const totalCount = await PostsModel.countDocuments();
     let posts = postsFromDB.map((p) => ({
       id: p._id,
       title: p.title,
@@ -23,24 +23,24 @@ export const postsRepository = {
       content: p.content,
       bloggerId: p.bloggerId,
       bloggerName: p.bloggerName,
+      addedAt: p.addedAt,
     }));
     return {
       posts: posts,
       totalCount: totalCount,
     };
-  },
+  }
 
   async getPostsByBloggerId(
     bloggerId: ObjectId,
     pageNumber: number,
     pageSize: number,
   ): Promise<PostsData> {
-    const postsFromDbBlogger = await postsCollection
-      .find({ bloggerId: bloggerId })
+    const postsFromDbBlogger = await PostsModel.find({ bloggerId: bloggerId })
       .limit(pageSize)
       .skip((pageNumber - 1) * pageSize)
-      .toArray();
-    const totalCount = await postsCollection.countDocuments({ bloggerId: bloggerId });
+      .lean();
+    const totalCount = await PostsModel.countDocuments({ bloggerId: bloggerId });
     let posts = postsFromDbBlogger.map((p) => ({
       id: p._id,
       title: p.title,
@@ -48,15 +48,46 @@ export const postsRepository = {
       content: p.content,
       bloggerId: p.bloggerId,
       bloggerName: p.bloggerName,
+      addedAt: p.addedAt,
     }));
     return {
       posts: posts,
       totalCount: totalCount,
     };
-  },
+  }
+
+  /* async createLikeOrDislike(newlike: PostsLikes): Promise<boolean> {
+    const { id, ...rest } = newlike;
+    const like = await PostLikeModel.insertMany({ ...rest, _id: newlike.id });
+    if (like) return true;
+    return false;
+  }
+
+  async findLikeByPostID(postId: ObjectId): Promise<PostsLikes | null> {
+    const like = await PostLikeModel.findOne({ postId: postId });
+    if (like) return like;
+    return null;
+  } */
+
+  /*  async updateLikeByPostID(postId: ObjectId, likesStatus: string): Promise<boolean> {
+    const like = await PostLikeModel.findOne({ postId: postId });
+    if (like) {
+      const result = await PostLikeModel.updateOne(
+        { postId: postId },
+        {
+          $set: {
+            likesStatus: likesStatus,
+          },
+        },
+      );
+      return result.matchedCount === 1;
+    } else {
+      return false;
+    }
+  } */
 
   async getPostsById(id: ObjectId): Promise<PostsType | null> {
-    const post = await postsCollection.findOne({ _id: id });
+    const post = await PostsModel.findOne({ _id: id });
     if (post) {
       return {
         id: post._id,
@@ -65,21 +96,23 @@ export const postsRepository = {
         content: post.content,
         bloggerId: post.bloggerId,
         bloggerName: post.bloggerName,
+        addedAt: post.addedAt,
       };
     }
     return null;
-  },
+  }
 
   async deletePostsById(id: ObjectId): Promise<boolean> {
-    const result = await postsCollection.deleteOne({ _id: id });
+    const result = await PostsModel.deleteOne({ _id: id });
     return result.deletedCount === 1;
-  },
+  }
 
-  async createdPosts(newPost: PostsType): Promise<boolean> {
+  async createdPosts(newPost: PostsType): Promise<PostsType | null> {
     const { id, ...rest } = newPost;
-    const posts = await postsCollection.insertOne({ ...rest, _id: newPost.id });
-    return posts.acknowledged;
-  },
+    const posts = await PostsModel.insertMany({ ...rest, _id: newPost.id });
+    if (posts) return newPost;
+    return null;
+  }
 
   async updatePosts(
     id: ObjectId,
@@ -88,9 +121,9 @@ export const postsRepository = {
     content: string,
     bloggerId: ObjectId,
   ): Promise<boolean | undefined> {
-    const blogger = await bloggersCollection.findOne({ _id: bloggerId });
+    const blogger = await BloggersModel.findOne({ _id: bloggerId });
     if (blogger) {
-      const result = await postsCollection.updateOne(
+      const result = await PostsModel.updateOne(
         { _id: id },
         {
           $set: {
@@ -106,5 +139,5 @@ export const postsRepository = {
     } else {
       return false;
     }
-  },
-};
+  }
+}

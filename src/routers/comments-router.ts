@@ -1,15 +1,22 @@
 import { Router, Request, Response } from 'express';
-import { ObjectId } from 'mongodb';
-import { commentsService } from '../domain/comments-service';
+import { CommentsController } from '../controllers/comments-controller';
 import { userIdValidator } from '../middlewares/commentExistValidator';
 import { contentCommentValidator } from '../middlewares/commentsValidation';
 import { mongoIdValidator } from '../middlewares/idValidator';
 import { inputValidationMiddleware } from '../middlewares/inputValidationMiddleware';
+import {
+  inputValidationLikeStatus,
+  likeOrDislakeValidation,
+  likeStatusValidation,
+} from '../middlewares/like-validator';
 import { usersAuthMiddleware } from '../middlewares/users-auth-middleware';
+import { container } from '../root/composition-root';
+
+const commentsController = container.resolve(CommentsController);
 
 export const commentsRouter = Router({});
 
-commentsRouter.put(
+/*commentsRouter.put(
   '/:commentId',
   usersAuthMiddleware,
   mongoIdValidator('commentId'),
@@ -23,9 +30,19 @@ commentsRouter.put(
     );
     res.status(204).send(newComment);
   },
+);*/
+
+commentsRouter.put(
+  '/:commentId',
+  usersAuthMiddleware.usersAuthMiddleware,
+  mongoIdValidator('commentId'),
+  userIdValidator,
+  contentCommentValidator,
+  inputValidationMiddleware,
+  commentsController.updateCommment.bind(commentsController),
 );
 
-commentsRouter.get(
+/*commentsRouter.get(
   '/:commentId',
   mongoIdValidator('commentId'),
   async (req: Request, res: Response) => {
@@ -36,14 +53,19 @@ commentsRouter.get(
       res.send(404);
     }
   },
+);*/
+
+commentsRouter.get(
+  '/:commentId',
+  mongoIdValidator('commentId'),
+  commentsController.getCommentByID.bind(commentsController),
 );
 
-commentsRouter.delete(
+/*commentsRouter.delete(
   '/:commentId',
   usersAuthMiddleware,
   mongoIdValidator('commentId'),
   userIdValidator,
-
   inputValidationMiddleware,
   async (req: Request, res: Response) => {
     const isDelete = await commentsService.deleteCommentById(new ObjectId(req.params.commentId));
@@ -53,4 +75,23 @@ commentsRouter.delete(
       res.send(404);
     }
   },
+);*/
+
+commentsRouter.delete(
+  '/:commentId',
+  usersAuthMiddleware.usersAuthMiddleware,
+  mongoIdValidator('commentId'),
+  userIdValidator,
+  inputValidationMiddleware,
+  commentsController.deleteComment.bind(commentsController),
+);
+
+commentsRouter.put(
+  '/:commentId/like-status',
+  mongoIdValidator('commentId'),
+  likeStatusValidation,
+  inputValidationLikeStatus,
+  likeOrDislakeValidation,
+
+  commentsController.updateLikeStatus.bind(commentsController),
 );

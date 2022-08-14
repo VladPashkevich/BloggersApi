@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { usersCollection } from '../repositories/db';
+import { UsersModel } from '../repositories/db';
 
 export const isConfirmedValidator = async (req: Request, res: Response, next: NextFunction) => {
   const code = req.body.code;
-  let isConfirm = await usersCollection.findOne({
+  let isConfirm = await UsersModel.findOne({
     'emailConfirmation.confirmationCode': code,
   });
   if (!isConfirm) {

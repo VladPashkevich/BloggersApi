@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { usersCollection } from '../repositories/db';
+import { UsersModel } from '../repositories/db';
 
 export const isConfirmedEmailValidator = async (
   req: Request,
@@ -8,7 +8,7 @@ export const isConfirmedEmailValidator = async (
   next: NextFunction,
 ) => {
   const email = req.body.email;
-  let isConfirm = await usersCollection.findOne({
+  let isConfirm = await UsersModel.findOne({
     'accountData.email': email,
   });
   if (isConfirm && isConfirm.emailConfirmation.isConfirmed) {

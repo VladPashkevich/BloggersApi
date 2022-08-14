@@ -1,18 +1,14 @@
-import {
-  bloggersCollection,
-  commentsCollection,
-  ipCollections,
-  postsCollection,
-  usersCollection,
-} from './db';
+import { BloggersModel, CommentsModel, IPModel, PostsModel, UsersModel } from './db';
+import { injectable } from 'inversify';
 
-export const deleteRepository = {
+@injectable()
+export class DeleteRepository {
   async deleteAlls(): Promise<boolean> {
-    await usersCollection.deleteMany({});
-    await bloggersCollection.deleteMany({});
-    await commentsCollection.deleteMany({});
-    await postsCollection.deleteMany({});
-    await ipCollections.deleteMany({});
+    await UsersModel.deleteMany({});
+    await BloggersModel.deleteMany({});
+    await CommentsModel.deleteMany({});
+    await PostsModel.deleteMany({});
+    await IPModel.deleteMany({});
     return true;
-  },
-};
+  }
+}

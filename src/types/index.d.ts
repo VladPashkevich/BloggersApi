@@ -1,4 +1,4 @@
-import { UserAccountOnType, UsersType } from '../repositories/types';
+import { UserAccountOnType, UsersType } from './ip-type';
 
 declare global {
   declare namespace Express {

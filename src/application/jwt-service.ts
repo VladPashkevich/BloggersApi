@@ -1,26 +1,28 @@
-import { UserAccountOnType, UsersType, UserType } from '../repositories/types';
+import { UserAccountOnType } from '../types/users-type';
 import jwt from 'jsonwebtoken';
 import { settings } from '../settings';
 import { ObjectId } from 'mongodb';
-import { tokenCollections } from '../repositories/db';
+import { TokenModel } from '../repositories/db';
+import { injectable } from 'inversify';
 
-export const jwtService = {
+@injectable()
+export class JWTService {
   async createJWT(user: UserAccountOnType) {
-    const token = jwt.sign({ userId: user._id }, settings.JWT_SECRET, { expiresIn: '10s' });
+    const token = jwt.sign({ userId: user._id }, settings.JWT_SECRET, { expiresIn: '12h' });
     return token;
-  },
+  }
 
   async createJWTRefresh(user: UserAccountOnType) {
     const tokenRefresh = jwt.sign({ userId: user._id }, settings.JWT_SECRET, {
-      expiresIn: '20s',
+      expiresIn: '24h',
     });
-    await tokenCollections.insertOne({
+    await TokenModel.insertMany({
       _id: new ObjectId(),
       refreshToken: tokenRefresh,
       userId: user._id,
     });
     return tokenRefresh;
-  },
+  }
 
   async getUserIdByToken(token: string) {
     try {
@@ -29,18 +31,19 @@ export const jwtService = {
     } catch (error) {
       return null;
     }
-  },
+  }
 
   async refreshTokenFind(token: string): Promise<boolean> {
-    let refreshTokenFind = await tokenCollections.findOne({ refreshToken: token });
+    let refreshTokenFind = await TokenModel.findOne({ refreshToken: token });
     if (refreshTokenFind === null) return false;
-    let refreshTokenTimeOut = await jwtService.getUserIdByToken(token);
+    let refreshTokenTimeOut = await this.getUserIdByToken(token);
     if (refreshTokenTimeOut === null) {
       return false;
     } else {
       return true;
     }
-  },
+  }
+
   async refreshTokenKill(token: string): Promise<boolean> {
     let result = await this.refreshTokenKillIn(token);
     if (result === false) {
@@ -48,9 +51,10 @@ export const jwtService = {
     } else {
       return true;
     }
-  },
+  }
+
   async refreshTokenKillIn(token: string): Promise<boolean> {
-    const result = await tokenCollections.deleteOne({ refreshToken: token });
+    const result = await TokenModel.deleteOne({ refreshToken: token });
     return result.deletedCount === 1;
-  },
-};
+  }
+}

@@ -1,38 +1,49 @@
 import bcrypt from 'bcrypt';
-import { emailManager } from '../mangers/email-managers';
-import { UserAccountDBType, UserForMe } from '../repositories/types';
-import { usersRepository } from '../repositories/users-db-repository';
-import { usersService } from './users-service';
+import { EmailManager } from '../mangers/email-managers';
+import { UsersRepository } from '../repositories/users-db-repository';
+import { UsersService } from './users-service';
 import { v4 as uuidv4 } from 'uuid';
 import add from 'date-fns/add';
 import { isConfirmedValidator } from '../middlewares/isConfirmedMiddleware';
 import { ObjectId } from 'mongodb';
+import { injectable } from 'inversify';
 
-export const authService = {
+@injectable()
+export class AuthService {
+  constructor(
+    protected usersRepository: UsersRepository,
+    protected usersService: UsersService,
+    protected emailManager: EmailManager,
+  ) {
+    this.usersRepository = usersRepository;
+    this.usersService = usersService;
+    this.emailManager = emailManager;
+  }
+
   async generateHash(password: string) {
     const hash = await bcrypt.hash(password, 10);
     return hash;
-  },
+  }
 
   async createUser(login: string, email: string, password: string) {
-    const newUser = await usersService.createdNewUser(login, email, password);
+    const newUser = await this.usersService.createdNewUser(login, email, password);
     if (!newUser) return null;
-    await emailManager.sendEmailConfirmationMessage(newUser);
+    await this.emailManager.sendEmailConfirmationMessage(newUser);
     return newUser;
-  },
+  }
 
   async confirmCode(code: string): Promise<boolean> {
-    let user = await usersRepository.findByConfirmationCode(code);
+    let user = await this.usersRepository.findByConfirmationCode(code);
     if (!user) return false;
     if (user.emailConfirmation.confirmationCode !== code) return false;
     if (user.emailConfirmation.isConfirmed) return false;
     if (user.emailConfirmation.expirationDate < new Date()) return false;
-    let result = await usersRepository.updateConfirmation(user._id);
+    let result = await this.usersRepository.updateConfirmation(user._id);
     return result;
-  },
+  }
 
   async confirmEmailResending(email: string): Promise<boolean> {
-    let user = await usersRepository.findByEmail(email);
+    let user = await this.usersRepository.findByEmail(email);
     if (!user) return false;
     if (user.emailConfirmation.isConfirmed) return false;
     const code = uuidv4();
@@ -48,8 +59,8 @@ export const authService = {
         }),
       },
     };
-    await usersRepository.updateConfirmationCode(user._id, code);
-    await emailManager.sendEmailConfirmationMessage(newUser);
+    await this.usersRepository.updateConfirmationCode(user._id, code);
+    await this.emailManager.sendEmailConfirmationMessage(newUser);
     return true;
-  },
-};
+  }
+}

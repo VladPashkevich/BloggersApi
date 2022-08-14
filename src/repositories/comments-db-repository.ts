@@ -1,24 +1,26 @@
+import 'reflect-metadata';
 import { ObjectId } from 'mongodb';
-import { commentsCollection } from './db';
-import { CommentsType, CommentType } from './types';
+import { CommentsModel } from './db';
+import { injectable } from 'inversify';
+import { CommentsType, CommentType } from '../types/comments-type';
 
 interface CommentsData {
-  comments: CommentType[];
+  comments: CommentsType[];
   totalCount: number;
 }
 
-export const commentsRepository = {
+@injectable()
+export class CommentsRepository {
   async getCommentsByPostId(
     postId: ObjectId,
     pageNumber: number,
     pageSize: number,
   ): Promise<CommentsData> {
-    const commentsFromDb = await commentsCollection
-      .find({ postId: postId })
+    const commentsFromDb = await CommentsModel.find({ postId: postId })
       .limit(pageSize)
       .skip((pageNumber - 1) * pageSize)
-      .toArray();
-    const totalCount = await commentsCollection.countDocuments({ postId: postId });
+      .lean();
+    const totalCount = await CommentsModel.countDocuments({ postId: postId });
     let comments = commentsFromDb.map((c) => ({
       id: c._id,
       userId: c.userId,
@@ -30,24 +32,25 @@ export const commentsRepository = {
       comments: comments,
       totalCount: totalCount,
     };
-  },
+  }
 
-  async createComment(newComment: CommentsType): Promise<boolean> {
+  async createComment(newComment: CommentType): Promise<boolean> {
     const { id, ...rest } = newComment;
-    const comment = await commentsCollection.insertOne({
+    const comment = await CommentsModel.insertMany({
       ...rest,
       _id: newComment.id,
     });
-    return comment.acknowledged;
-  },
+    if (comment) return true;
+    return false;
+  }
 
   async updateCommentById(id: ObjectId, content: string): Promise<boolean> {
-    const result = await commentsCollection.updateOne({ _id: id }, { $set: { content: content } });
+    const result = await CommentsModel.updateOne({ _id: id }, { $set: { content: content } });
     return result.matchedCount === 1;
-  },
+  }
 
-  async getCommentById(id: ObjectId): Promise<CommentType | null> {
-    const comment = await commentsCollection.findOne({ _id: id });
+  async getCommentById(id: ObjectId): Promise<CommentsType | null> {
+    const comment = await CommentsModel.findOne({ _id: id });
     if (comment) {
       return {
         id: comment._id,
@@ -58,10 +61,14 @@ export const commentsRepository = {
       };
     }
     return null;
-  },
+  }
 
   async deleteCommentById(id: ObjectId): Promise<boolean> {
-    let result = await commentsCollection.deleteOne({ _id: id });
+    let result = await CommentsModel.deleteOne({ _id: id });
     return result.deletedCount === 1;
-  },
-};
+  }
+
+  async commentsCount(postId: ObjectId): Promise<number> {
+    return CommentsModel.countDocuments({ postid: postId });
+  }
+}

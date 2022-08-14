@@ -1,6 +1,8 @@
 import nodemailer from 'nodemailer';
+import { injectable } from 'inversify';
 
-export const emailAdapter = {
+@injectable()
+export class EmailAdapter {
   async sendEmail(email: string, code: string, subject: string) {
     let transport = nodemailer.createTransport({
       service: 'gmail',
@@ -20,5 +22,5 @@ export const emailAdapter = {
       text: `https://some-front.com/confirm-registration?code=${code}`,
     });
     console.log(info);
-  },
-};
+  }
+}

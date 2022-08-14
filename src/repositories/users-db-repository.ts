@@ -1,27 +1,26 @@
 import { ObjectId } from 'mongodb';
-import { usersCollection } from './db';
+import { UsersModel } from './db';
+import { injectable } from 'inversify';
 import {
   UserAccountDBType,
   UserAccountOnType,
   UserForMe,
-  UsersType,
   UsersTypeFromDB,
-  UserType,
-} from './types';
+} from '../types/users-type';
 
 interface UsersData {
   users: UsersTypeFromDB[];
   totalCount: number;
 }
 
-export const usersRepository = {
+@injectable()
+export class UsersRepository {
   async getAllUsers(pageNumber: number, pageSize: number): Promise<UsersData> {
-    const usersTypeFromDb = await usersCollection
-      .find()
+    const usersTypeFromDb = await UsersModel.find()
       .limit(pageSize)
       .skip((pageNumber - 1) * pageSize)
-      .toArray();
-    const totalCount = await usersCollection.countDocuments();
+      .lean();
+    const totalCount = await UsersModel.countDocuments();
     let users = usersTypeFromDb.map((u) => ({
       id: u._id,
       login: u.accountData.login,
@@ -31,22 +30,25 @@ export const usersRepository = {
       users: users,
       totalCount: totalCount,
     };
-  },
+  }
+
   async createNewUser(newUser: UserAccountDBType): Promise<boolean> {
     const { id, ...rest } = newUser;
-    const user = await usersCollection.insertOne({
+    const user = await UsersModel.insertMany({
       ...rest,
       _id: newUser.id,
     });
-    return user.acknowledged;
-  },
+    if (user) return true;
+    return false;
+  }
+
   async deleteUserById(id: ObjectId): Promise<boolean> {
-    let result = await usersCollection.deleteOne({ _id: id });
+    let result = await UsersModel.deleteOne({ _id: id });
     return result.deletedCount === 1;
-  },
+  }
 
   async getUserById(id: ObjectId): Promise<UsersTypeFromDB | null> {
-    const user = await usersCollection.findOne({ _id: id });
+    const user = await UsersModel.findOne({ _id: id });
     if (user) {
       return {
         id: user._id,
@@ -54,10 +56,10 @@ export const usersRepository = {
       };
     }
     return null;
-  },
+  }
 
   async getUserByIdToken(id: ObjectId): Promise<UserForMe | null> {
-    const user = await usersCollection.findOne({ _id: id });
+    const user = await UsersModel.findOne({ _id: id });
     if (user) {
       return {
         email: user.accountData.email,
@@ -66,49 +68,52 @@ export const usersRepository = {
       };
     }
     return null;
-  },
+  }
+
   async getUserByIdForAuth(id: ObjectId): Promise<UserAccountOnType | null> {
-    const user = await usersCollection.findOne({ _id: id });
+    const user = await UsersModel.findOne({ _id: id });
     if (user) {
       return user;
     }
     return null;
-  },
+  }
+
   async findByLogin(login: string): Promise<UserAccountOnType | null> {
-    const user = usersCollection.findOne({ 'accountData.login': login });
+    const user = UsersModel.findOne({ 'accountData.login': login });
     if (user) {
       return user;
     }
     return null;
-  },
+  }
 
   async findByConfirmationCode(emailConfirmationCode: string) {
-    const user = await usersCollection.findOne({
+    const user = await UsersModel.findOne({
       'emailConfirmation.confirmationCode': emailConfirmationCode,
     });
     return user;
-  },
+  }
 
   async updateConfirmation(id: ObjectId) {
-    let result = await usersCollection.updateOne(
+    let result = await UsersModel.updateOne(
       { _id: id },
       { $set: { 'emailConfirmation.isConfirmed': true } },
     );
     return result.modifiedCount === 1;
-  },
+  }
+
   async findByEmail(email: string): Promise<UserAccountOnType | null> {
-    const user = await usersCollection.findOne({ 'accountData.email': email });
+    const user = await UsersModel.findOne({ 'accountData.email': email });
     if (user) {
       return user;
     }
     return null;
-  },
+  }
 
   async updateConfirmationCode(id: ObjectId, emailConfirmationCode: string) {
-    let result = await usersCollection.updateOne(
+    let result = await UsersModel.updateOne(
       { _id: id },
       { $set: { 'emailConfirmation.confirmationCode': emailConfirmationCode } },
     );
     return result.modifiedCount === 1;
-  },
-};
+  }
+}

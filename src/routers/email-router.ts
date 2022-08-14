@@ -1,8 +1,13 @@
 import { Request, Response, Router } from 'express';
-import { emailAdapter } from '../adapters/email-adapter';
+import { EmailController } from '../controllers/email-controller';
+import { container } from '../root/composition-root';
 
 export const emailRouter = Router({});
 
-emailRouter.post('/send', async (req: Request, res: Response) => {
+const emailController = container.resolve(EmailController);
+
+/*emailRouter.post('/send', async (req: Request, res: Response) => {
   await emailAdapter.sendEmail(req.body.email, req.body.text, req.body.subject);
-});
+});*/
+
+emailRouter.post('/send', emailController.sendEmail.bind(emailController));

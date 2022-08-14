@@ -1,28 +1,37 @@
 import { Request, Response, Router } from 'express';
-import { bodyBloggerIDValidator } from '../middlewares/bloggerIdValidator';
 import { contentValidator } from '../middlewares/contentValidator';
 import { mongoIdValidator } from '../middlewares/idValidator';
 import { inputValidationMiddleware } from '../middlewares/inputValidationMiddleware';
 import { shortDescriptionValidator } from '../middlewares/shortDescriptionValidator';
 import { titleValidator } from '../middlewares/titleValidator';
-import { postsService } from '../domain/posts-service';
 import { superAdminAuthMiddleware } from '../middlewares/basicAutht';
-import { commentsService } from '../domain/comments-service';
-import { ObjectId } from 'mongodb';
-import { commentsRepository } from '../repositories/comments-db-repository';
-import { usersAuthMiddleware } from '../middlewares/users-auth-middleware';
+import { usersAuthMiddleware, UsersAuthMiddleware } from '../middlewares/users-auth-middleware';
 import { contentCommentValidator } from '../middlewares/commentsValidation';
+import { container } from '../root/composition-root';
+import { PostsController } from '../controllers/posts-controllers';
+import { bodyBloggerIDValidator } from '../middlewares/bloggerIdValidator';
+import { JWTService } from '../application/jwt-service';
+import { UsersService } from '../domain/users-service';
+import {
+  inputValidationLikeStatus,
+  likeOrDislakeValidation,
+  likeStatusValidation,
+} from '../middlewares/like-validator';
 
 export const postsRouter = Router({});
 
-postsRouter.get('/', async (req: Request, res: Response) => {
+const postsController = container.resolve(PostsController);
+
+/*postsRouter.get('/', async (req: Request, res: Response) => {
   const pageNumber = Number(req.query.PageNumber) || 1;
   const pageSize = Number(req.query.PageSize) || 10;
   const allPosts = await postsService.getPosts(pageNumber, pageSize);
   res.status(200).send(allPosts);
-});
+});*/
 
-postsRouter.get(
+postsRouter.get('/', postsController.getAllPosts.bind(postsController));
+
+/*postsRouter.get(
   '/:postId/comments',
   mongoIdValidator('postId'),
   async (req: Request, res: Response) => {
@@ -32,9 +41,15 @@ postsRouter.get(
     const allPosts = await postsService.getCommentsByPostId(postId, pageNumber, pageSize);
     res.status(200).send(allPosts);
   },
+);*/
+
+postsRouter.get(
+  '/:postId/comments',
+  mongoIdValidator('postId'),
+  postsController.getCommentsByPostID.bind(postsController),
 );
 
-postsRouter.post(
+/*postsRouter.post(
   '/',
   superAdminAuthMiddleware,
   titleValidator,
@@ -55,9 +70,20 @@ postsRouter.post(
       res.send(404);
     }
   },
-);
+);*/
 
 postsRouter.post(
+  '/',
+  superAdminAuthMiddleware,
+  titleValidator,
+  shortDescriptionValidator,
+  contentValidator,
+  bodyBloggerIDValidator.new,
+  inputValidationMiddleware,
+  postsController.createPost.bind(postsController),
+);
+
+/*postsRouter.post(
   '/:postId/comments',
   usersAuthMiddleware,
   mongoIdValidator('postId'),
@@ -82,9 +108,18 @@ postsRouter.post(
       res.send(404);
     }
   },
+);*/
+
+postsRouter.post(
+  '/:postId/comments',
+  usersAuthMiddleware.usersAuthMiddleware,
+  mongoIdValidator('postId'),
+  contentCommentValidator,
+  inputValidationMiddleware,
+  postsController.createCommentByPostID.bind(postsController),
 );
 
-postsRouter.put(
+/*postsRouter.put(
   '/:postId',
   superAdminAuthMiddleware,
   mongoIdValidator('postId'),
@@ -112,9 +147,21 @@ postsRouter.put(
       res.send(404);
     }
   },
+);*/
+
+postsRouter.put(
+  '/:postId',
+  superAdminAuthMiddleware,
+  mongoIdValidator('postId'),
+  titleValidator,
+  shortDescriptionValidator,
+  contentValidator,
+  bodyBloggerIDValidator.new,
+  inputValidationMiddleware,
+  postsController.updatePost.bind(postsController),
 );
 
-postsRouter.get(
+/*postsRouter.get(
   '/:postId',
   mongoIdValidator('postId'),
   inputValidationMiddleware,
@@ -126,9 +173,16 @@ postsRouter.get(
       res.send(404);
     }
   },
+);*/
+
+postsRouter.get(
+  '/:postId',
+  mongoIdValidator('postId'),
+  inputValidationMiddleware,
+  postsController.getPostByID.bind(postsController),
 );
 
-postsRouter.delete(
+/*postsRouter.delete(
   '/:postId',
   superAdminAuthMiddleware,
   mongoIdValidator('postId'),
@@ -142,4 +196,21 @@ postsRouter.delete(
       res.sendStatus(404);
     }
   },
+);*/
+
+postsRouter.delete(
+  '/:postId',
+  superAdminAuthMiddleware,
+  mongoIdValidator('postId'),
+  inputValidationMiddleware,
+  postsController.deletePost.bind(postsController),
+);
+
+postsRouter.put(
+  '/:postId/like-status',
+  mongoIdValidator('postId'),
+  likeStatusValidation,
+  inputValidationLikeStatus,
+  likeOrDislakeValidation,
+  postsController.updateLikeStatus.bind(postsController),
 );

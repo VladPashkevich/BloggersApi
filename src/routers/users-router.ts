@@ -1,15 +1,17 @@
-import { usersService } from '../domain/users-service';
 import { Request, Response, Router } from 'express';
-import { ObjectId } from 'mongodb';
 import { superAdminAuthMiddleware } from '../middlewares/basicAutht';
 import { inputValidationMiddleware } from '../middlewares/inputValidationMiddleware';
 import { mongoIdValidator } from '../middlewares/idValidator';
 import { userPasswordValidator } from '../middlewares/userPasswordValidation';
 import { userLoginValidator } from '../middlewares/userLoginValidation';
+import { UsersController } from '../controllers/users-controller';
+import { container } from '../root/composition-root';
 
 export const usersRouter = Router({});
 
-usersRouter.post(
+const usersController = container.resolve(UsersController);
+
+/*usersRouter.post(
   '/',
   superAdminAuthMiddleware,
   userPasswordValidator,
@@ -25,16 +27,27 @@ usersRouter.post(
       res.status(201).send({ id: newUser.id, login: newUser.accountData.login });
     }
   },
+);*/
+
+usersRouter.post(
+  '/',
+  superAdminAuthMiddleware,
+  userPasswordValidator,
+  userLoginValidator,
+  inputValidationMiddleware,
+  usersController.createUser.bind(usersController),
 );
 
-usersRouter.get('/', async (req: Request, res: Response) => {
+/*usersRouter.get('/', async (req: Request, res: Response) => {
   const pageNumber = Number(req.query.PageNumber) || 1;
   const pageSize = Number(req.query.PageSize) || 10;
   const allUsers = await usersService.getAllUsers(pageNumber, pageSize);
   res.status(200).send(allUsers);
-});
+});*/
 
-usersRouter.delete(
+usersRouter.get('/', usersController.getAllUsers.bind(usersController));
+
+/*usersRouter.delete(
   '/:userId',
   superAdminAuthMiddleware,
   mongoIdValidator('userId'),
@@ -47,4 +60,12 @@ usersRouter.delete(
       res.sendStatus(404);
     }
   },
+);*/
+
+usersRouter.delete(
+  '/:userId',
+  superAdminAuthMiddleware,
+  mongoIdValidator('userId'),
+  inputValidationMiddleware,
+  usersController.deleteUser.bind(usersController),
 );

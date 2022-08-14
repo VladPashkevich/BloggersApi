@@ -1,7 +1,12 @@
-import { deleteRepository } from '../repositories/delete-repository';
+import { DeleteRepository } from '../repositories/delete-repository';
+import { injectable } from 'inversify';
 
-export const deleteService = {
+@injectable()
+export class DeleteService {
+  constructor(protected deleteRepository: DeleteRepository) {
+    this.deleteRepository = deleteRepository;
+  }
   async deleteUsers(): Promise<boolean> {
-    return deleteRepository.deleteAlls();
-  },
-};
+    return this.deleteRepository.deleteAlls();
+  }
+}

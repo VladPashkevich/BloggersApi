@@ -1,30 +1,29 @@
 import { id } from 'date-fns/locale';
 import { Router, Request, Response } from 'express';
-import { jwtService } from '../application/jwt-service';
-import { authService } from '../domain/auth-service';
-import { usersService } from '../domain/users-service';
-import { emailExistsValidator } from '../middlewares/emailCheckMiddleware';
-import { emailFindValidator } from '../middlewares/emailExistValidation';
+import { AuthController } from '../controllers/auth-controller';
+
+import { checkNoExistEmail } from '../middlewares/emailExistValidation';
 import { emailValidator } from '../middlewares/emailValidation';
 import { inputValidationMiddleware } from '../middlewares/inputValidationMiddleware';
-import { mistake429 } from '../middlewares/ipChekMiddleware';
+import { mistakes429 } from '../middlewares/ipChekMiddleware';
 import { isConfirmedEmailValidator } from '../middlewares/isConfirmedEmail';
 import { isConfirmedValidator } from '../middlewares/isConfirmedMiddleware';
-import { userExistsValidator } from '../middlewares/loginCheckMiddleware';
+import { loginFindValidator, LoginFindValidator } from '../middlewares/loginCheckMiddleware';
 import { userLoginValidator } from '../middlewares/userLoginValidation';
 import { userPasswordValidator } from '../middlewares/userPasswordValidation';
 import { usersAuthMiddleware } from '../middlewares/users-auth-middleware';
-import { tokenCollections, usersCollection } from '../repositories/db';
+import { container } from '../root/composition-root';
 
 export const authRouter = Router({});
 
-authRouter.post(
+const authController = container.resolve(AuthController);
+
+/*authRouter.post(
   '/registration',
   mistake429,
   userLoginValidator,
   userPasswordValidator,
   emailValidator,
-
   userExistsValidator,
   emailExistsValidator,
   inputValidationMiddleware,
@@ -35,9 +34,21 @@ authRouter.post(
       res.sendStatus(204);
     }
   },
-);
+);*/
 
 authRouter.post(
+  '/registration',
+  mistakes429.mistake429,
+  userLoginValidator,
+  userPasswordValidator,
+  emailValidator,
+  loginFindValidator.checkLogin,
+  checkNoExistEmail.checkNoExistEmail,
+  inputValidationMiddleware,
+  authController.registrationUser.bind(authController),
+);
+
+/*authRouter.post(
   '/registration-confirmation',
   mistake429,
   isConfirmedValidator,
@@ -56,9 +67,16 @@ authRouter.post(
       });
     }
   },
-);
+);*/
 
 authRouter.post(
+  '/registration-confirmation',
+  mistakes429.mistake429,
+  isConfirmedValidator,
+  authController.registrationWithCode.bind(authController),
+);
+
+/*authRouter.post(
   '/registration-email-resending',
   mistake429,
   isConfirmedEmailValidator,
@@ -79,8 +97,18 @@ authRouter.post(
       });
     }
   },
+);*/
+
+authRouter.post(
+  '/registration-email-resending',
+  mistakes429.mistake429,
+  isConfirmedEmailValidator,
+  checkNoExistEmail.checkNoExistEmail,
+  inputValidationMiddleware,
+  authController.resendingEmailWithCode.bind(authController),
 );
-authRouter.post('/refresh-token', async (req: Request, res: Response) => {
+
+/*authRouter.post('/refresh-token', async (req: Request, res: Response) => {
   const refreshToken = req.cookies.refreshToken;
   if (!refreshToken) return res.sendStatus(401);
   const tokenExpire = await jwtService.getUserIdByToken(refreshToken);
@@ -104,9 +132,11 @@ authRouter.post('/refresh-token', async (req: Request, res: Response) => {
     maxAge: 20 * 1000,
   });
   res.status(200).send({ accessToken: token });
-});
+});*/
 
-authRouter.post('/logout', async (req: Request, res: Response) => {
+authRouter.post('/refresh-token', authController.createTwoToken.bind(authController));
+
+/*authRouter.post('/logout', async (req: Request, res: Response) => {
   const refreshToken = req.cookies.refreshToken;
   if (!refreshToken) return res.sendStatus(401);
   const tokenExpire = await jwtService.getUserIdByToken(refreshToken);
@@ -119,7 +149,9 @@ authRouter.post('/logout', async (req: Request, res: Response) => {
     res.sendStatus(401);
     return;
   }
-});
+});*/
+
+/*authRouter.post('/logout', authController.logoutFromSystem);
 
 authRouter.get('/me', usersAuthMiddleware, async (req: Request, res: Response) => {
   const authHeader = req.headers.authorization;
@@ -136,9 +168,15 @@ authRouter.get('/me', usersAuthMiddleware, async (req: Request, res: Response) =
       res.status(200).send(user);
     }
   }
-});
+});*/
 
-authRouter.post('/login', mistake429, async (req: Request, res: Response) => {
+authRouter.get(
+  '/me',
+  usersAuthMiddleware.usersAuthMiddleware,
+  authController.showUserAfterAuth.bind(authController),
+);
+
+/*authRouter.post('/login', mistake429, async (req: Request, res: Response) => {
   const user = await usersService.getUserByLogIn(req.body.login);
   if (!user) return res.sendStatus(401);
 
@@ -159,4 +197,10 @@ authRouter.post('/login', mistake429, async (req: Request, res: Response) => {
   } else {
     res.sendStatus(401);
   }
-});
+});*/
+
+authRouter.post(
+  '/login',
+  mistakes429.mistake429,
+  authController.logininzation.bind(authController),
+);
