@@ -26,7 +26,7 @@ app.use('/email', emailRouter);
 app.use('/testing', deleteRouter);
 app.set('trust proxy', true);
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 5001;
 
 const startApp = async () => {
   console.log(process.env.mongoUri);

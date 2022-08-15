@@ -9,7 +9,9 @@ import { LikesSchema } from '../types/likes-type';
 import { UsersSchema } from '../types/users-type';
 import { TokenSchema } from '../types/token-type';
 
-const mongoUri = settings.MONGO_URI || 'mongodb://0.0.0.0:27017';
+const mongoUri =
+  settings.MONGO_URI ||
+  'mongodb+srv://VladPashkevich:vlad1993$@vladpashkevichstudy.uyz4zp9.mongodb.net';
 let dbName = process.env.mongoDBName || 'youtube';
 //export const client = new MongoClient(settings.MONGO_URI);
 
