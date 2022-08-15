@@ -11,6 +11,6 @@ export class DeleteController {
   async deleteAllDatabase(req: Request, res: Response) {
     await this.deleteService.deleteUsers();
 
-    res.sendStatus(204);
+    res.sendStatus(200);
   }
 }

@@ -9,7 +9,7 @@ import { LikesSchema } from '../types/likes-type';
 import { UsersSchema } from '../types/users-type';
 import { TokenSchema } from '../types/token-type';
 
-const mongoUri = process.env.mongoURI || 'mongodb://0.0.0.0:27017';
+const mongoUri = settings.MONGO_URI || 'mongodb://0.0.0.0:27017';
 let dbName = process.env.mongoDBName || 'youtube';
 //export const client = new MongoClient(settings.MONGO_URI);
 
@@ -36,6 +36,7 @@ export async function runDb() {
     // Connect the client to the server
     //await client.connect();
     await mongoose.connect(mongoUri + '/' + dbName);
+    console.log(mongoUri, 'MongoUri');
     console.log('Connected successfully to mongo server');
   } catch (e) {
     console.log("Can't connect to db");
