@@ -135,6 +135,7 @@ export class PostsController {
     );
     if (isUpdated) {
       res.sendStatus(204);
+      return;
     }
 
     res.sendStatus(404);
