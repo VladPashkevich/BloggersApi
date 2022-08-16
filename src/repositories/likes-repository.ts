@@ -16,12 +16,12 @@ export class LikesRepository {
     return false;
   }
 
-  async countLike(postId: ObjectId): Promise<number> {
-    return LikesModel.countDocuments({ postId, status: 'Like' });
+  async countLike(postid: ObjectId): Promise<number> {
+    return LikesModel.countDocuments({ postid, status: 'Like' });
   }
 
-  async countDislike(postId: ObjectId): Promise<number> {
-    return LikesModel.countDocuments({ postId, status: 'Dislike' });
+  async countDislike(postid: ObjectId): Promise<number> {
+    return LikesModel.countDocuments({ postid, status: 'Dislike' });
   }
 
   async myStatus(userId: ObjectId, post: ObjectId): Promise<string> {
@@ -32,22 +32,18 @@ export class LikesRepository {
     return 'None';
   }
 
-  async newestLike(postId: ObjectId): Promise<NewestLikes[]> {
-    const like = await LikesModel.find({ $and: [{ postId }, { status: 'Like' }] })
+  async newestLike(postid: ObjectId): Promise<NewestLikes[]> {
+    const like = await LikesModel.find({ $and: [{ postid }, { status: 'Like' }] })
       .sort({ addedAt: -1 })
       .limit(3)
       .lean();
     return like.map((l) => ({ addedAt: l.addedAt, userId: l.userId, login: l.login }));
   }
 
-  async findLike(
-    postId: ObjectId,
-    userId: ObjectId,
-    status: string,
-  ): Promise<LikeDBType | boolean> {
-    const like = await LikesModel.findOne({ $and: [{ postId }, { userId }] });
+  async findLike(post: ObjectId, userId: ObjectId, status: string): Promise<LikeDBType | boolean> {
+    const like = await LikesModel.findOne({ $and: [{ post }, { userId }] });
     if (!like) return false;
-    await LikesModel.updateOne({ postId: postId, userId: userId }, { $set: { status: status } });
+    await LikesModel.updateOne({ post: post, userId: userId }, { $set: { status: status } });
     return like;
   }
 }
