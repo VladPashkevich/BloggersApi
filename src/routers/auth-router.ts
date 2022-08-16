@@ -11,7 +11,7 @@ import { isConfirmedValidator } from '../middlewares/isConfirmedMiddleware';
 import { loginFindValidator, LoginFindValidator } from '../middlewares/loginCheckMiddleware';
 import { userLoginValidator } from '../middlewares/userLoginValidation';
 import { userPasswordValidator } from '../middlewares/userPasswordValidation';
-import { usersAuthMiddleware } from '../middlewares/users-auth-middleware';
+import { userAuthMiddleware } from '../middlewares/users-auth-middleware';
 import { container } from '../root/composition-root';
 
 export const authRouter = Router({});
@@ -170,11 +170,7 @@ authRouter.get('/me', usersAuthMiddleware, async (req: Request, res: Response) =
   }
 });*/
 
-authRouter.get(
-  '/me',
-  usersAuthMiddleware.usersAuthMiddleware,
-  authController.showUserAfterAuth.bind(authController),
-);
+authRouter.get('/me', userAuthMiddleware, authController.showUserAfterAuth.bind(authController));
 
 /*authRouter.post('/login', mistake429, async (req: Request, res: Response) => {
   const user = await usersService.getUserByLogIn(req.body.login);

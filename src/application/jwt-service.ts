@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { UserAccountOnType } from '../types/users-type';
 import jwt from 'jsonwebtoken';
 import { settings } from '../settings';

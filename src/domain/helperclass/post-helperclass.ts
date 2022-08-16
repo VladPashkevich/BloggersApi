@@ -42,17 +42,17 @@ export class PostsHelper {
     } */
 
   async getPostsPagination(
-    pagenumber: number,
+    pageNumber: number,
     pagesize: number,
     userId: ObjectId,
     bloggerId?: ObjectId,
   ): Promise<PostsWithPaginationType> {
-    let totalCount: number = await PostsModel.countDocuments({ bloggerId: bloggerId });
-    let page: number = pagenumber;
+    let totalCount: number = await PostsModel.countDocuments();
+    let page: number = pageNumber;
     let pageSize: number = pagesize;
     let pagesCount: number = Math.ceil(totalCount / pageSize);
 
-    const itemsFromDb: PostsDBType[] = await PostsModel.countDocuments({ bloggerId: bloggerId })
+    const itemsFromDb: PostsDBType[] = await PostsModel.find({})
       .limit(pageSize)
       .skip((page - 1) * pageSize)
       .lean();

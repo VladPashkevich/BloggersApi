@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { Request, Response } from 'express';
 import { ObjectId } from 'mongodb';
 import { PostsService } from '../domain/posts-service';
@@ -12,7 +13,7 @@ export class PostsController {
   }
 
   async getAllPosts(req: Request, res: Response) {
-    const userId = new ObjectId(req.user.id);
+    const userId = new ObjectId(req.user?._id);
     const pageNumber = Number(req.query.PageNumber) || 1;
     const pageSize = Number(req.query.PageSize) || 10;
     const allPosts = await this.postsService.findPosts(pageNumber, pageSize, userId);
@@ -20,7 +21,7 @@ export class PostsController {
   }
 
   async getCommentsByPostID(req: Request, res: Response) {
-    const userId = new ObjectId(req.user.id);
+    const userId = new ObjectId(req.user?._id);
     const pageNumber = Number(req.query.PageNumber) || 1;
     const pageSize = Number(req.query.PageSize) || 10;
     const postId = new ObjectId(req.params.postId);
@@ -48,7 +49,14 @@ export class PostsController {
     if (post) {
       res.status(201).send(post);
     } else {
-      res.send(404);
+      res.status(400).send({
+        errorsMessages: [
+          {
+            message: 'Invalid value',
+            field: 'bloggerId',
+          },
+        ],
+      });
     }
   }
 
@@ -88,7 +96,14 @@ export class PostsController {
     if (updatePost) {
       res.status(204).send(updatePost);
     } else {
-      res.send(404);
+      res.status(400).send({
+        errorsMessages: [
+          {
+            message: 'Invalid value',
+            field: 'bloggerId',
+          },
+        ],
+      });
     }
   }
 
@@ -114,13 +129,12 @@ export class PostsController {
   async updateLikeStatus(req: Request, res: Response) {
     const isUpdated = await this.postsService.updateLikeStatus(
       req.body.likeStatus,
-      new ObjectId(req.params.id),
-      new ObjectId(req.user.id),
-      req.user.login,
+      new ObjectId(req.params.postId),
+      new ObjectId(req.user!._id),
+      req.user!.accountData.login,
     );
     if (isUpdated) {
       res.sendStatus(204);
-      return;
     }
 
     res.sendStatus(404);

@@ -2,9 +2,10 @@ import { ObjectId } from 'mongodb';
 import { CommentsRepository } from '../repositories/comments-db-repository';
 import { PostsRepository } from '../repositories/posts-db-repository';
 import { injectable } from 'inversify';
-import { CommentsType } from '../types/comments-type';
+import { CommentsResponseType, CommentsType, CommentType } from '../types/comments-type';
 import { UsersRepository } from '../repositories/users-db-repository';
 import { LikeHelperClass } from './helperclass/like-helperclass';
+import { CommentsHelperClass } from './helperclass/comment-helperclass';
 
 @injectable()
 export class CommentsService {
@@ -13,11 +14,13 @@ export class CommentsService {
     protected commentsRepository: CommentsRepository,
     protected usersRepository: UsersRepository,
     protected likeHelperClass: LikeHelperClass,
+    protected commentHelperClass: CommentsHelperClass,
   ) {
     this.postsRepository = postsRepository;
     this.commentsRepository = commentsRepository;
     this.usersRepository = usersRepository;
     this.likeHelperClass = likeHelperClass;
+    this.commentHelperClass = commentHelperClass;
   }
 
   async createComment(
@@ -25,12 +28,12 @@ export class CommentsService {
     userId: ObjectId,
     userLogin: string,
     postId: ObjectId,
-  ): Promise<CommentsType | null> {
+  ): Promise<CommentsResponseType | null | undefined> {
     const post = await this.postsRepository.getPostsById(postId);
     const user = await this.usersRepository.getUserById(userId);
     if (!user) throw new Error('User not exists');
     if (post) {
-      const comment = {
+      const comment: CommentType = {
         id: new ObjectId(),
         content: content,
         userId: user!.id,
@@ -40,18 +43,10 @@ export class CommentsService {
       };
       const createdComment = await this.commentsRepository.createComment(comment);
       if (createdComment) {
-        return {
-          id: comment.id,
-          userId: comment.userId,
-          userLogin: comment.userLogin,
-          content: comment.content,
-          addedAt: comment.addedAt,
-        };
-      } else {
-        return null;
+        return this.commentHelperClass.createResponseComment(comment);
       }
+      return null;
     }
-    return null;
   }
 
   async deleteCommentById(id: ObjectId): Promise<boolean> {
@@ -61,13 +56,18 @@ export class CommentsService {
   async updateComment(content: string, id: ObjectId): Promise<boolean> {
     return this.commentsRepository.updateCommentById(id, content);
   }
-  async getCommentById(id: ObjectId): Promise<CommentsType | null> {
-    return this.commentsRepository.getCommentById(id);
+  async getCommentById(id: ObjectId, userId?: ObjectId): Promise<CommentsResponseType | null> {
+    const comment: CommentsType | null = await this.commentsRepository.getCommentById(id);
+    if (comment) {
+      return this.commentHelperClass.getResponseComment(comment, new ObjectId(userId));
+    } else {
+      return null;
+    }
   }
 
   async updateLikeStatus(likeStatus: string, postId: ObjectId, userId: ObjectId, login: string) {
     let comment: CommentsType | null = await this.commentsRepository.getCommentById(postId);
-
+    console.log(comment);
     if (comment) {
       return this.likeHelperClass.createLike(likeStatus, postId, userId, login);
     }

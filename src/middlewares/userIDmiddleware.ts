@@ -1,10 +1,11 @@
 import { NextFunction, Request, Response } from 'express';
+import { ObjectId } from 'mongodb';
 import { EmailAdapter } from '../adapters/email-adapter';
 import { JWTService } from '../application/jwt-service';
 import { UsersService } from '../domain/users-service';
 import { UsersRepository } from '../repositories/users-db-repository';
 
-class UsersAuthMiddleware {
+class UsersIdMiddleware {
   jwtService: JWTService;
   usersService: UsersService;
   constructor() {
@@ -13,9 +14,10 @@ class UsersAuthMiddleware {
     this.jwtService = new JWTService();
     this.usersService = new UsersService(repo, adapter);
   }
-  async usersAuthMiddleware(req: Request, res: Response, next: NextFunction) {
+  async usersIdMiddleware(req: Request, res: Response, next: NextFunction) {
     if (!req.headers.authorization) {
-      res.send(401);
+      req.user = null;
+      next();
       return;
     }
     const token = req.headers.authorization.split(' ')[1];
@@ -23,26 +25,9 @@ class UsersAuthMiddleware {
     if (userId) {
       req.user = await this.usersService.getUserByIdForAuth(userId);
       next();
-    } else {
-      res.send(401);
+      return;
     }
   }
 }
-
-const usersAuthMiddleware = new UsersAuthMiddleware();
-export const userAuthMiddleware = usersAuthMiddleware.usersAuthMiddleware.bind(usersAuthMiddleware);
-
-/*export const usersAuthMiddleware = async (req: Request, res: Response, next: NextFunction) => {
-  if (!req.headers.authorization) {
-    res.send(401);
-    return;
-  }
-  const token = req.headers.authorization.split(' ')[1];
-  const userId = await jwtService.getUserIdByToken(token);
-  if (userId) {
-    req.user = await usersService.getUserByIdForAuth(userId);
-    next();
-  } else {
-    res.send(401);
-  }
-};*/
+const usersIdMiddleware = new UsersIdMiddleware();
+export const userIdMiddleware = usersIdMiddleware.usersIdMiddleware.bind(usersIdMiddleware);

@@ -4,6 +4,7 @@ import { CommentsModel } from '../repositories/db';
 
 export const userIdValidator = async (req: Request, res: Response, next: NextFunction) => {
   const userId = req.user?._id;
+
   const id = new ObjectId(req.params.commentId);
   if (!userId) {
     res.sendStatus(401);

@@ -24,8 +24,8 @@ export class LikesRepository {
     return LikesModel.countDocuments({ postId, status: 'Dislike' });
   }
 
-  async myStatus(userId: ObjectId, postId: ObjectId): Promise<string> {
-    const status: LikeDBType | null = await LikesModel.findOne({ $and: [{ postId }, { userId }] });
+  async myStatus(userId: ObjectId, post: ObjectId): Promise<string> {
+    const status: LikeDBType | null = await LikesModel.findOne({ $and: [{ post }, { userId }] });
     if (status) {
       return status.status;
     }

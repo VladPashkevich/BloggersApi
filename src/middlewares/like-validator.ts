@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 
 export const likeStatusValidation = body('likeStatus').isString().withMessage('Should be String');
 
-export const inputValidationLikeStatus = (req: Request, res: Response, next: NextFunction) => {
+/* export const inputValidationLikeStatus = (req: Request, res: Response, next: NextFunction) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     let newError = errors.array();
@@ -16,14 +16,14 @@ export const inputValidationLikeStatus = (req: Request, res: Response, next: Nex
     return;
   }
   next();
-};
+}; */
 
 export const likeOrDislakeValidation = (req: Request, res: Response, next: NextFunction) => {
   const likeStatus = req.body.likeStatus;
   if (likeStatus !== 'Dislike' && likeStatus !== 'Like' && likeStatus !== 'None') {
     res
       .status(400)
-      .json({ errorsMessages: [{ message: 'Should be Like or Dislike', field: 'likeStatus' }] });
+      .send({ errorsMessages: [{ message: 'Should be Like or Dislike', field: 'likeStatus' }] });
     return;
   }
   next();

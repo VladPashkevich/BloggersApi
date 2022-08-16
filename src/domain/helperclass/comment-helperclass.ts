@@ -6,6 +6,7 @@ import {
   CommentDBType,
   CommentsPaginationType,
   CommentsResponseType,
+  CommentsType,
   CommentType,
 } from '../../types/comments-type';
 import { LikeHelperClass } from './like-helperclass';
@@ -47,7 +48,7 @@ export class CommentsHelperClass {
     let page: number = pagenumber;
     let pageSize: number = pagesize;
     let pagesCount: number = Math.ceil(totalCount / pageSize);
-    const itemsFromDb: CommentDBType[] = await CommentsModel.countDocuments({ postId: postId })
+    const itemsFromDb: CommentDBType[] = await CommentsModel.find({ postId: postId })
       .limit(pageSize)
       .skip((page - 1) * pageSize)
       .lean();
@@ -86,6 +87,27 @@ export class CommentsHelperClass {
 
   async createResponseComment(
     comment: CommentType,
+    userId?: ObjectId,
+  ): Promise<CommentsResponseType | null> {
+    return {
+      id: comment.id,
+      content: comment.content,
+      userId: comment.userId,
+      userLogin: comment.userLogin,
+      addedAt: comment.addedAt,
+      likesInfo: {
+        likesCount: await this.likeHelperClass.likesCount(new ObjectId(comment.id)),
+        dislikesCount: await this.likeHelperClass.dislikesCount(new ObjectId(comment.id)),
+        myStatus: await this.likeHelperClass.myStatus(
+          new ObjectId(userId),
+          new ObjectId(comment.id),
+        ),
+      },
+    };
+  }
+
+  async getResponseComment(
+    comment: CommentsType,
     userId?: ObjectId,
   ): Promise<CommentsResponseType | null> {
     return {

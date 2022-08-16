@@ -40,9 +40,9 @@ export class CommentsController {
   async updateLikeStatus(req: Request, res: Response) {
     const isUpdated = await this.commentsService.updateLikeStatus(
       req.body.likeStatus,
-      new ObjectId(req.params.id),
-      req.user.id,
-      req.user.login,
+      new ObjectId(req.params.commentId),
+      req.user!._id,
+      req.user!.accountData.login,
     );
     if (isUpdated) {
       res.sendStatus(204);

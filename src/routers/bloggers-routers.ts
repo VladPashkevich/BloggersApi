@@ -9,6 +9,7 @@ import { shortDescriptionValidator } from '../middlewares/shortDescriptionValida
 import { contentValidator } from '../middlewares/contentValidator';
 import { BloggersController } from '../controllers/bloggers-controller';
 import { container } from '../root/composition-root';
+import { userIdMiddleware } from '../middlewares/userIDmiddleware';
 
 const bloggersController = container.resolve(BloggersController);
 
@@ -42,7 +43,7 @@ bloggersRouter.get(
   '/:bloggerId',
   mongoIdValidator('bloggerId'),
   inputValidationMiddleware,
-  bloggersController.deleteBloggerByID.bind(bloggersController),
+  bloggersController.getBloggerByID.bind(bloggersController),
 );
 
 /*bloggersRouter.get(
@@ -66,6 +67,7 @@ bloggersRouter.get(
 
 bloggersRouter.get(
   '/:bloggerId/posts',
+  userIdMiddleware,
   mongoIdValidator('bloggerId'),
   bloggersController.getPostByBloggerID.bind(bloggersController),
 );

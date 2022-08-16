@@ -4,12 +4,8 @@ import { userIdValidator } from '../middlewares/commentExistValidator';
 import { contentCommentValidator } from '../middlewares/commentsValidation';
 import { mongoIdValidator } from '../middlewares/idValidator';
 import { inputValidationMiddleware } from '../middlewares/inputValidationMiddleware';
-import {
-  inputValidationLikeStatus,
-  likeOrDislakeValidation,
-  likeStatusValidation,
-} from '../middlewares/like-validator';
-import { usersAuthMiddleware } from '../middlewares/users-auth-middleware';
+import { likeOrDislakeValidation, likeStatusValidation } from '../middlewares/like-validator';
+import { userAuthMiddleware } from '../middlewares/users-auth-middleware';
 import { container } from '../root/composition-root';
 
 const commentsController = container.resolve(CommentsController);
@@ -34,7 +30,7 @@ export const commentsRouter = Router({});
 
 commentsRouter.put(
   '/:commentId',
-  usersAuthMiddleware.usersAuthMiddleware,
+  userAuthMiddleware,
   mongoIdValidator('commentId'),
   userIdValidator,
   contentCommentValidator,
@@ -79,7 +75,7 @@ commentsRouter.get(
 
 commentsRouter.delete(
   '/:commentId',
-  usersAuthMiddleware.usersAuthMiddleware,
+  userAuthMiddleware,
   mongoIdValidator('commentId'),
   userIdValidator,
   inputValidationMiddleware,
@@ -88,9 +84,10 @@ commentsRouter.delete(
 
 commentsRouter.put(
   '/:commentId/like-status',
+  userAuthMiddleware,
   mongoIdValidator('commentId'),
   likeStatusValidation,
-  inputValidationLikeStatus,
+  inputValidationMiddleware,
   likeOrDislakeValidation,
 
   commentsController.updateLikeStatus.bind(commentsController),

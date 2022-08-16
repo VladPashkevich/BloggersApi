@@ -82,8 +82,16 @@ export class PostsService {
     return result;
   } */
 
-  async getPostsById(id: ObjectId): Promise<PostsType | null> {
+  /* async getPostsById(id: ObjectId): Promise<PostsType | null> {
     return this.postsRepository.getPostsById(id);
+  } */
+
+  async getPostsById(id: ObjectId, userId?: ObjectId): Promise<PostsResponseType | null> {
+    const post: PostsType | null = await this.postsRepository.getPostsById(id);
+    if (post) {
+      return this.postsHelperClass.makePostResponse(post, userId);
+    }
+    return null;
   }
 
   async deletePostsById(id: ObjectId): Promise<boolean> {
@@ -126,12 +134,13 @@ export class PostsService {
         bloggerName: blogger!.name,
         addedAt: new Date(),
       };
-      const creatededPost = await this.postsRepository.createdPosts(newPost);
-      if (creatededPost) {
-        return newPost;
-      } else {
-        return null;
+      const makedPost = await this.postsRepository.createdPosts(newPost);
+      if (makedPost) {
+        let newPosts = await this.postsHelperClass.makePostResponse(makedPost);
+        return newPosts;
       }
+    } else {
+      return null;
     }
   }
 
@@ -167,8 +176,8 @@ export class PostsService {
     pagesize: number,
     userId: ObjectId,
   ): Promise<CommentsPaginationType | null> {
-    let post: PostsResponseType | null = await this.findPostById(postId);
-
+    let post: PostsResponseType | null = await this.getPostsById(postId);
+    console.log(post);
     if (post) {
       let allComments: CommentsPaginationType = await this.commentsHelperClass.sendAllComments(
         new ObjectId(postId),
@@ -193,7 +202,6 @@ export class PostsService {
 
   async updateLikeStatus(likeStatus: string, postId: ObjectId, userId: ObjectId, login: string) {
     let post: PostsResponseType | null = await this.findPostById(postId);
-
     if (post) {
       return this.likeHelperClass.createLike(likeStatus, postId, userId, login);
     }

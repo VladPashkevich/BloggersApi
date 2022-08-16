@@ -1,4 +1,5 @@
 import { body } from 'express-validator';
+import { NextFunction, Request, Response } from 'express';
 import { ObjectId } from 'mongodb';
 import { BloggersService } from '../domain/bloggers-service';
 import { LikeHelperClass } from '../domain/helperclass/like-helperclass';
@@ -8,8 +9,7 @@ import { LikesRepository } from '../repositories/likes-repository';
 import { PostsRepository } from '../repositories/posts-db-repository';
 import { injectable } from 'inversify';
 
-@injectable()
-export class BodyBloggerIDValidator {
+class BodyBloggerIDValidator {
   bloggersService: BloggersService;
 
   constructor() {
@@ -22,17 +22,33 @@ export class BodyBloggerIDValidator {
     this.bloggersService = new BloggersService(repo, postrepo, postHelperClass);
   }
 
-  new() {
-    const instance = new BodyBloggerIDValidator();
-    return body('bloggerId').custom(async (bloggerId) => {
-      const blogger = await instance.bloggersService.getBloggersById(new ObjectId(bloggerId));
+  async bloggerIdExist(req: Request, res: Response, next: NextFunction) {
+    try {
+      const blogger = await this.bloggersService.getBloggersById(new ObjectId(req.body.bloggerId));
+      if (!blogger) {
+        res.status(400).send({
+          errorsMessages: [{ message: 'BloggerId does not exists ', field: 'bloggerId' }],
+        });
+        return;
+      }
+      next();
+    } catch (e) {
+      console.log(e);
+    }
+    next();
+    return;
+  }
+}
+
+/* async body('bloggerId').custom(async (bloggerId) => {
+      const blogger = await this.bloggersService.getBloggersById(new ObjectId(bloggerId));
 
       if (!blogger) {
         throw new Error('BloggerId does not exists');
       }
       return true;
-    });
-  }
-}
+    }); */
 
-export const bodyBloggerIDValidator = new BodyBloggerIDValidator();
+const bodyBloggerIDValidator = new BodyBloggerIDValidator();
+export const bloggerIdMiddleware =
+  bodyBloggerIDValidator.bloggerIdExist.bind(bodyBloggerIDValidator);

@@ -4,9 +4,7 @@ import { ObjectId } from 'mongodb';
 
 export const mongoIdValidator =
   (param: string) => async (req: Request, res: Response, next: NextFunction) => {
-    const id = req.params?.[param];
-    console.log(req.params);
-    console.log(id);
+    const id = req.params?.[param] ? req.params?.[param] : req.body?.[param];
     try {
       new ObjectId(id);
       next();

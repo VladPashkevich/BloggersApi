@@ -3,7 +3,7 @@ import { Schema } from 'mongoose';
 
 export type LikeDBType = {
   id: ObjectId;
-  postId: ObjectId;
+  postid: ObjectId;
   status: string;
   addedAt: Date;
   userId: ObjectId;
@@ -29,7 +29,7 @@ export type NewestLikes = {
 
 export const LikesSchema = new Schema<LikeDBType>({
   id: ObjectId,
-  postId: ObjectId,
+  postid: ObjectId,
   status: String,
   addedAt: Date,
   userId: ObjectId,

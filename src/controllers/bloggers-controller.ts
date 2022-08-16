@@ -22,7 +22,7 @@ export class BloggersController {
   async getBloggerByID(req: Request, res: Response) {
     const blogger = await this.bloggersService.getBloggersById(new ObjectId(req.params.bloggerId));
     if (blogger) {
-      res.send(blogger);
+      res.status(200).send(blogger);
     } else {
       res.send(404);
     }
@@ -33,7 +33,7 @@ export class BloggersController {
     if (!blogger) {
       return res.send(404);
     }
-    const userId = new ObjectId(req.user.id);
+    const userId = new ObjectId(req.user?._id);
     const pageNumber = Number(req.query.PageNumber) || 1;
     const pageSize = Number(req.query.PageSize) || 10;
     const allPostsOfBlogger = await this.bloggersService.getPostsByBloggerId(
