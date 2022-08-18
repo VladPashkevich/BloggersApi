@@ -5,6 +5,7 @@ import { contentCommentValidator } from '../middlewares/commentsValidation';
 import { mongoIdValidator } from '../middlewares/idValidator';
 import { inputValidationMiddleware } from '../middlewares/inputValidationMiddleware';
 import { likeOrDislakeValidation, likeStatusValidation } from '../middlewares/like-validator';
+import { userIdMiddleware } from '../middlewares/userIDmiddleware';
 import { userAuthMiddleware } from '../middlewares/users-auth-middleware';
 import { container } from '../root/composition-root';
 
@@ -53,6 +54,7 @@ commentsRouter.put(
 
 commentsRouter.get(
   '/:commentId',
+  userIdMiddleware,
   mongoIdValidator('commentId'),
   commentsController.getCommentByID.bind(commentsController),
 );

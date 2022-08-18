@@ -42,6 +42,7 @@ postsRouter.get('/', userIdMiddleware, postsController.getAllPosts.bind(postsCon
 
 postsRouter.get(
   '/:postId/comments',
+  userIdMiddleware,
   mongoIdValidator('postId'),
   postsController.getCommentsByPostID.bind(postsController),
 );
@@ -174,6 +175,7 @@ postsRouter.put(
 
 postsRouter.get(
   '/:postId',
+  userIdMiddleware,
   mongoIdValidator('postId'),
   inputValidationMiddleware,
   postsController.getPostByID.bind(postsController),
