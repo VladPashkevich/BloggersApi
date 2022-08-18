@@ -10,6 +10,15 @@ export type LikeDBType = {
   login: string;
 };
 
+export type LikeType = {
+  _id: ObjectId;
+  postid: ObjectId;
+  status: string;
+  addedAt: Date;
+  userId: ObjectId;
+  login: string;
+};
+
 export type ExtendedLikesInfo = {
   likesCount: number;
   dislikesCount: number;

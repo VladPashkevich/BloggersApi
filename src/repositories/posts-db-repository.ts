@@ -109,7 +109,7 @@ export class PostsRepository {
 
   async createdPosts(newPost: PostsType): Promise<PostsType | null> {
     const { id, ...rest } = newPost;
-    const posts = await PostsModel.insertMany({ ...rest, _id: newPost.id });
+    const posts = await PostsModel.insertMany({ newPost });
     if (posts) return newPost;
     return null;
   }

@@ -67,7 +67,6 @@ export class CommentsService {
 
   async updateLikeStatus(likeStatus: string, postId: ObjectId, userId: ObjectId, login: string) {
     let comment: CommentsType | null = await this.commentsRepository.getCommentById(postId);
-    console.log(comment);
     if (comment) {
       return this.likeHelperClass.createLike(likeStatus, postId, userId, login);
     }

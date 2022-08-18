@@ -18,7 +18,11 @@ export class CommentsController {
   }
 
   async getCommentByID(req: Request, res: Response) {
-    const comment = await this.commentsService.getCommentById(new ObjectId(req.params.commentId));
+    const userId = new ObjectId(req.user?._id);
+    const comment = await this.commentsService.getCommentById(
+      new ObjectId(req.params.commentId),
+      userId,
+    );
     if (comment) {
       res.status(200).send(comment);
     } else {

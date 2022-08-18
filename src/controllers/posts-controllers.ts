@@ -108,7 +108,8 @@ export class PostsController {
   }
 
   async getPostByID(req: Request, res: Response) {
-    const post = await this.postsService.getPostsById(new ObjectId(req.params.postId));
+    const userId = new ObjectId(req.user?._id);
+    const post = await this.postsService.findPostById(new ObjectId(req.params.postId), userId);
     if (post) {
       res.status(200).send(post);
     } else {

@@ -1,8 +1,8 @@
 import { body, validationResult } from 'express-validator';
 import { NextFunction, Request, Response } from 'express';
-let status = ['None', 'Like', 'Dislike'];
-export const likeStatusValidation = body('likeStatus').isIn(status);
-/* export const likeStatusValidation = body('likeStatus').isString().withMessage('Should be String'); */
+/* let status = ['None', 'Like', 'Dislike'];
+export const likeStatusValidation = body('likeStatus').isIn(status); */
+export const likeStatusValidation = body('likeStatus').isString().withMessage('Should be String');
 
 /* export const inputValidationLikeStatus = (req: Request, res: Response, next: NextFunction) => {
   const errors = validationResult(req);

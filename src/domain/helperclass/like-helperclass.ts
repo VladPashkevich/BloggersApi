@@ -18,8 +18,8 @@ export class LikeHelperClass {
     return this.likesRepository.countDislike(id);
   }
 
-  async myStatus(id: ObjectId, post: ObjectId): Promise<string> {
-    return this.likesRepository.myStatus(id, post);
+  async myStatus(id: ObjectId, postid: ObjectId): Promise<string> {
+    return this.likesRepository.myStatus(id, postid);
   }
 
   async newestLike(id: ObjectId): Promise<NewestLikes[]> {

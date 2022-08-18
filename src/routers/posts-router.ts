@@ -178,6 +178,7 @@ postsRouter.get(
   userIdMiddleware,
   mongoIdValidator('postId'),
   inputValidationMiddleware,
+
   postsController.getPostByID.bind(postsController),
 );
 

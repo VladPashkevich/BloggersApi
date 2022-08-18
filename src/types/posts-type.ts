@@ -51,7 +51,7 @@ export type PostsResponseType = {
     myStatus: string;
     newestLikes: Array<{
       addedAt: Date;
-      userId: ObjectId;
+      userId: ObjectId | undefined;
       login: string;
     }>;
   };

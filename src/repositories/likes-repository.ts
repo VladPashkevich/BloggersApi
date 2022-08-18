@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { injectable } from 'inversify';
 import { ObjectId } from 'mongodb';
-import { LikeDBType, NewestLikes } from '../types/likes-type';
+import { LikeDBType, LikeType, NewestLikes } from '../types/likes-type';
 import { LikesModel } from './db';
 
 @injectable()
@@ -24,8 +24,8 @@ export class LikesRepository {
     return LikesModel.countDocuments({ postid, status: 'Dislike' });
   }
 
-  async myStatus(userId: ObjectId, post: ObjectId): Promise<string> {
-    const status: LikeDBType | null = await LikesModel.findOne({ $and: [{ post }, { userId }] });
+  async myStatus(userId: ObjectId, postid?: ObjectId): Promise<string> {
+    const status: LikeType | null = await LikesModel.findOne({ $and: [{ postid }, { userId }] });
     if (status) {
       return status.status;
     }

@@ -202,6 +202,7 @@ export class PostsService {
 
   async updateLikeStatus(likeStatus: string, postId: ObjectId, userId: ObjectId, login: string) {
     let post: PostsResponseType | null = await this.findPostById(postId);
+    console.log(post);
     if (post) {
       return this.likeHelperClass.createLike(likeStatus, postId, userId, login);
     }
