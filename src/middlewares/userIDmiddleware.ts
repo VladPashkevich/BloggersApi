@@ -27,6 +27,8 @@ class UsersIdMiddleware {
       next();
       return;
     }
+    next();
+    return;
   }
 }
 const usersIdMiddleware = new UsersIdMiddleware();

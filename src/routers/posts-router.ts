@@ -210,6 +210,7 @@ postsRouter.put(
   userAuthMiddleware,
   mongoIdValidator('postId'),
   likeStatusValidation,
+
   inputValidationMiddleware,
   likeOrDislakeValidation,
   postsController.updateLikeStatus.bind(postsController),
