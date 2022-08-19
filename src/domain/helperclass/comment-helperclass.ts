@@ -43,7 +43,7 @@ export class CommentsHelperClass {
     pagesize: number,
     userId: ObjectId,
   ): Promise<CommentsPaginationType> {
-    let totalCount: number = await this.commentsRepository.commentsCount({ postId: postId });
+    let totalCount: number = await this.commentsRepository.commentsCount(postId);
 
     let page: number = pagenumber;
     let pageSize: number = pagesize;

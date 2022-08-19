@@ -69,6 +69,6 @@ export class CommentsRepository {
   }
 
   async commentsCount(postId: ObjectId): Promise<number> {
-    return CommentsModel.countDocuments({ postid: postId });
+    return CommentsModel.countDocuments({ postId: postId });
   }
 }

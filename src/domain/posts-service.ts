@@ -176,10 +176,9 @@ export class PostsService {
     userId: ObjectId,
   ): Promise<CommentsPaginationType | null> {
     let post: PostsResponseType | null = await this.getPostsById(postId);
-    console.log(post);
     if (post) {
       let allComments: CommentsPaginationType = await this.commentsHelperClass.sendAllComments(
-        new ObjectId(postId),
+        post.id,
         pagenumber,
         pagesize,
         userId,
