@@ -29,7 +29,6 @@ app.set('trust proxy', true);
 const port = process.env.PORT || 5000;
 
 const startApp = async () => {
-  console.log(process.env.mongoUri);
   await runDb();
   app.listen(port, () => {
     console.log(`Example app listening on port ${port}`);

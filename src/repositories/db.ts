@@ -10,9 +10,10 @@ import { UsersSchema } from '../types/users-type';
 import { TokenSchema } from '../types/token-type';
 
 const mongoUri =
-  settings.MONGO_URI ||
-  'mongodb+srv://VladPashkevich:vlad1993$@vladpashkevichstudy.uyz4zp9.mongodb.net';
-let dbName = process.env.mongoDBName || 'youtube';
+  process.env.mongoURI ||
+  'mongodb+srv://VladPashkevich:vlad1993$@vladpashkevichstudy.uyz4zp9.mongodb.net/?retryWrites=true&w=majority';
+//const mongoUri = process.env.mongoUri || 'mongodb://localhost:27017';
+let dbName = process.env.mongodbName || 'youtube';
 //export const client = new MongoClient(settings.MONGO_URI);
 
 //let db = client.db('youtube');
@@ -34,10 +35,9 @@ export const LikesModel = mongoose.model('likes', LikesSchema);
 
 export async function runDb() {
   try {
-    console.log(settings.MONGO_URI);
     // Connect the client to the server
     //await client.connect();
-    await mongoose.connect(mongoUri + '/' + dbName);
+    await mongoose.connect(mongoUri, { dbName });
     console.log(mongoUri, 'MongoUri');
     console.log('Connected successfully to mongo server');
   } catch (e) {
