@@ -42,7 +42,7 @@ export class PostsHelper {
         return null
     } */
 
-  async getPostsPagination(
+  async getPostsPaginationBloggerID(
     pageNumber: number,
     pagesize: number,
     userId: ObjectId,
@@ -58,6 +58,56 @@ export class PostsHelper {
     let pagesCount: number = Math.ceil(totalCount / pageSize);
 
     const itemsFromDb: PostsDBType[] = await PostsModel.find(filterQuery)
+      .limit(pageSize)
+      .skip((page - 1) * pageSize)
+      .lean();
+    const mapItems = async () => {
+      return Promise.all(
+        itemsFromDb.map(async (p) => ({
+          id: p._id,
+          title: p.title,
+          shortDescription: p.shortDescription,
+          content: p.content,
+          bloggerId: p.bloggerId,
+          bloggerName: p.bloggerName,
+          addedAt: p.addedAt,
+          extendedLikesInfo: {
+            likesCount: await this.likeHelperClass.likesCount(p._id),
+            dislikesCount: await this.likeHelperClass.dislikesCount(p._id),
+            myStatus: await this.likeHelperClass.myStatus(userId, p._id),
+            newestLikes: await this.likeHelperClass.newestLike(p._id),
+          },
+        })),
+      );
+    };
+
+    let post = {
+      pagesCount,
+      page,
+      pageSize,
+      totalCount,
+      items: await mapItems(),
+    };
+
+    return post;
+  }
+
+  async getPostsPagination(
+    pageNumber: number,
+    pagesize: number,
+    userId: ObjectId,
+    bloggerId?: ObjectId,
+  ): Promise<PostsWithPaginationType> {
+    const filterQuery: FilterQuery<PostsDBType> = {
+      bloggerId,
+    };
+
+    let totalCount: number = await PostsModel.countDocuments({});
+    let page: number = pageNumber;
+    let pageSize: number = pagesize;
+    let pagesCount: number = Math.ceil(totalCount / pageSize);
+
+    const itemsFromDb: PostsDBType[] = await PostsModel.find({})
       .limit(pageSize)
       .skip((page - 1) * pageSize)
       .lean();

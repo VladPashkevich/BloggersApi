@@ -41,6 +41,14 @@ export class PostsService {
     return this.postsHelperClass.getPostsPagination(pageNumber, pageSize, userId);
   }
 
+  async findPostsByBlogger(
+    pageNumber: number,
+    pageSize: number,
+    userId: ObjectId,
+  ): Promise<PostsWithPaginationType> {
+    return this.postsHelperClass.getPostsPaginationBloggerID(pageNumber, pageSize, userId);
+  }
+
   async findPostById(postId: ObjectId, userId?: ObjectId): Promise<PostsResponseType | null> {
     const post: PostsType | null = await this.postsRepository.getPostsById(postId);
     if (post) {

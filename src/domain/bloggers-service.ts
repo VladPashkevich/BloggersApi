@@ -52,7 +52,7 @@ export class BloggersService {
     let blogger: BloggersType | null = await this.bloggersRepository.getBloggersById(bloggerId);
 
     if (blogger) {
-      return await this.postHelperClass.getPostsPagination(
+      return await this.postHelperClass.getPostsPaginationBloggerID(
         pageNumber,
         pageSize,
         userId,
