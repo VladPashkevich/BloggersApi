@@ -1,4 +1,12 @@
-import { BloggersModel, CommentsModel, IPModel, PostsModel, UsersModel } from './db';
+import {
+  BloggersModel,
+  CommentsModel,
+  IPModel,
+  LikesModel,
+  PostsModel,
+  TokenModel,
+  UsersModel,
+} from './db';
 import { injectable } from 'inversify';
 
 @injectable()
@@ -9,6 +17,8 @@ export class DeleteRepository {
     await CommentsModel.deleteMany({});
     await PostsModel.deleteMany({});
     await IPModel.deleteMany({});
+    await LikesModel.deleteMany({});
+    await TokenModel.deleteMany({});
     return true;
   }
 }

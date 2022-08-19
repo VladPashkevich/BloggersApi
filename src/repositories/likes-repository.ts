@@ -40,10 +40,14 @@ export class LikesRepository {
     return like.map((l) => ({ addedAt: l.addedAt, userId: l.userId, login: l.login }));
   }
 
-  async findLike(post: ObjectId, userId: ObjectId, status: string): Promise<LikeDBType | boolean> {
-    const like = await LikesModel.findOne({ $and: [{ post }, { userId }] });
+  async findLike(
+    postid: ObjectId,
+    userId: ObjectId,
+    status: string,
+  ): Promise<LikeDBType | boolean> {
+    const like = await LikesModel.findOne({ $and: [{ postid }, { userId }] });
     if (!like) return false;
-    await LikesModel.updateOne({ post: post, userId: userId }, { $set: { status: status } });
+    await LikesModel.updateOne({ postid: postid, userId: userId }, { $set: { status: status } });
     return like;
   }
 }

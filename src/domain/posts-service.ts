@@ -199,10 +199,10 @@ export class PostsService {
     return this.postsRepository.updatePosts(id, title, shortDescription, content, bloggerId);
   }
 
-  async updateLikeStatus(likeStatus: string, postId: ObjectId, userId: ObjectId, login: string) {
-    let post: PostsResponseType | null = await this.findPostById(postId);
+  async updateLikeStatus(likeStatus: string, postid: ObjectId, userId: ObjectId, login: string) {
+    let post: PostsResponseType | null = await this.findPostById(postid);
     if (post) {
-      return this.likeHelperClass.createLike(likeStatus, postId, userId, login);
+      return this.likeHelperClass.createLike(likeStatus, postid, userId, login);
     }
     return null;
   }

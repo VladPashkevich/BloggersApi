@@ -10,12 +10,12 @@ export class LikeHelperClass {
     this.likesRepository = likesRepository;
   }
 
-  async likesCount(id: ObjectId): Promise<number> {
-    return this.likesRepository.countLike(id);
+  async likesCount(postid: ObjectId): Promise<number> {
+    return this.likesRepository.countLike(postid);
   }
 
-  async dislikesCount(id: ObjectId): Promise<number> {
-    return this.likesRepository.countDislike(id);
+  async dislikesCount(postid: ObjectId): Promise<number> {
+    return this.likesRepository.countDislike(postid);
   }
 
   async myStatus(id: ObjectId, postid: ObjectId): Promise<string> {

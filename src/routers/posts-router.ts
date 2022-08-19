@@ -207,7 +207,7 @@ postsRouter.delete(
 );
 
 postsRouter.put(
-  '/:postId/like-status',
+  '/:postid/like-status',
   userAuthMiddleware,
   mongoIdValidator('postId'),
   likeStatusValidation,
