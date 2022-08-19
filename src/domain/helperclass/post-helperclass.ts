@@ -1,5 +1,6 @@
 import { injectable } from 'inversify';
 import { ObjectId } from 'mongodb';
+import { FilterQuery } from 'mongoose';
 import { BloggersRepository } from '../../repositories/bloggers-db-repository';
 import { PostsModel } from '../../repositories/db';
 import { PostsRepository } from '../../repositories/posts-db-repository';
@@ -47,12 +48,16 @@ export class PostsHelper {
     userId: ObjectId,
     bloggerId?: ObjectId,
   ): Promise<PostsWithPaginationType> {
-    let totalCount: number = await PostsModel.countDocuments();
+    const filterQuery: FilterQuery<PostsDBType> = {
+      bloggerId,
+    };
+
+    let totalCount: number = await PostsModel.countDocuments(filterQuery);
     let page: number = pageNumber;
     let pageSize: number = pagesize;
     let pagesCount: number = Math.ceil(totalCount / pageSize);
 
-    const itemsFromDb: PostsDBType[] = await PostsModel.find({})
+    const itemsFromDb: PostsDBType[] = await PostsModel.find(filterQuery)
       .limit(pageSize)
       .skip((page - 1) * pageSize)
       .lean();
