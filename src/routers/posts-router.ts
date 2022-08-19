@@ -209,7 +209,7 @@ postsRouter.delete(
 postsRouter.put(
   '/:postid/like-status',
   userAuthMiddleware,
-  mongoIdValidator('postId'),
+  mongoIdValidator('postid'),
   likeStatusValidation,
 
   inputValidationMiddleware,

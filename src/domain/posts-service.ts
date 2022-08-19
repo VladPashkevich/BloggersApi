@@ -124,7 +124,7 @@ export class PostsService {
   ): Promise<PostsType | null | undefined> {
     const blogger = await this.bloggersRepository.getBloggersById(bloggerId);
     if (blogger) {
-      const newPost: PostsType = {
+      const post: PostsType = {
         id: new ObjectId(),
         title,
         shortDescription,
@@ -133,7 +133,7 @@ export class PostsService {
         bloggerName: blogger!.name,
         addedAt: new Date(),
       };
-      const makedPost = await this.postsRepository.createdPosts(newPost);
+      const makedPost = await this.postsRepository.createdPosts(post);
       if (makedPost) {
         let newPosts = await this.postsHelperClass.makePostResponse(makedPost);
         return newPosts;
